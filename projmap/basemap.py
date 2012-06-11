@@ -137,10 +137,21 @@ class Projmap(Basemap):
 
 
     def read_configfile(self):
+        """Read and parse the config file"""
         cfg = ConfigParser.ConfigParser()
-        cfg.read(basedir + "/projmapsrc")
+
+        def openfile(fname):
+            self.map_regions_file = fname
+            cfg.read(fname)
+
+        openfile(os.curdir + "/map_regions.cfg")
         if not self.region in cfg.sections():
-            raise NameError('Region not included in config file')
+            openfile(os.path.expanduser("~") + "/.map_regions.cfg")
+            if not self.region in cfg.sections():
+                openfile(basedir + "/map_regions.cfg")
+                if not self.region in cfg.sections():
+                    raise NameError('Region not included in config file')
+
         self.base_kwargs = {}
         def splitkey(key, val):
             if "base" in key:

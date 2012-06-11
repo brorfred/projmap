@@ -7,6 +7,6 @@ setup(name='projmap',
       url='http://brorfred.org/python_dists/projmap/',
       requires=["numpy(>=1.5)", "matplotlib(>=1.1.0)"],
       packages=['projmap'],
-      package_data={'projmap': ['data/*.txt']},
-      data_files=[('projmap', ['projmap/map_regions.cfg',])]
+      package_data={'projmap': ['data/*.txt','map_regions.cfg']},
+      #data_files=[('projmap', ['projmap/map_regions.cfg',])]
      )
