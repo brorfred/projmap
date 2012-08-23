@@ -86,15 +86,26 @@ class Projmap(Basemap):
         if hasattr(self,'scale_lon'):
             self.drawmapscale(-69.6,43.35,-69.6,43.35,25)
 
-    def rectangle(self,lon1,lat1,lon2,lat2,c='k'):
+    def rectangle(self,lon1,lat1,lon2,lat2,c='0.3',shading=None, step=100):
         """Draw a rectangle on the map and respect the projection.""" 
-        def line(lon1,lat1,lon2,lat2):
-            x,y = self.gcpoints(lon1,lat1,lon2,lat2,100)
+        class pos:
+            x = np.array([])
+            y = np.array([])
+
+        def line(lons, lats):
+            x,y = self(lons, lats)
             self.plot(x,y,c=c)
-        line(lon1,lat1,lon1,lat2)
-        line(lon1,lat2,lon2,lat2)
-        line(lon2,lat2,lon2,lat1)
-        line(lon2,lat1,lon1,lat1)
+            pos.x = np.hstack((pos.x,x))
+            pos.y = np.hstack((pos.y,y))
+
+        line([lon1]*step, np.linspace(lat1,lat2,step))
+        line(np.linspace(lon1,lon2,step), [lat1]*step)
+        line([lon2]*step, np.linspace(lat2,lat1,step))
+        line(np.linspace(lon2,lon1,step), [lat2]*step)
+        if shading:
+            p = pl.Polygon(zip(pos.x, pos.y),facecolor=shading, edgecolor=c,
+                           alpha=0.5,linewidth=1)
+            pl.gca().add_patch(p)
 
     def fronts(self,lglon=36, dlon=5, ax=None):
         """Plot fronts in the Southern Ocean """
@@ -108,7 +119,7 @@ class Projmap(Basemap):
             x,y = self(frmat[:,0],frmat[:,1])
             x[mask] = np.nan
             y[mask] = np.nan
-            self.plot(x, y, color=self.frontColor, lw=self.frontwidth,zorder=2)
+            self.plot(x, y, color=self.frontcolor, lw=self.frontwidth,zorder=2)
 
             latpos = np.nonzero(frmat[:,0] > lon)[0].min()
             xp,yp = self(lon,frmat[latpos,1])
