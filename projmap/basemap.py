@@ -60,31 +60,61 @@ class Projmap(Basemap):
                 splitkey(key, val)
 
 
-
     def nice(self,latlabels=True,lonlabels=True):
         """ Draw land, parallells and meridians on a map"""
-        if latlabels == True:
+        def alpha(lH):
+            for l in lH.items():
+                l[1][0][0].set_alpha(0.5)
+        if hasattr(self, "latlabels"): latlabels = self.latlabels
+        if hasattr(self, "lonlabels"): lonlabels = self.lonlabels
+            
+        if (latlabels == True):
             latlabels = [1,0,0,0]
         elif latlabels == False:
             latlabels = [0,0,0,0]
+        if (lonlabels == True):
+            lonlabels = [1,0,0,0]
+        elif lonlabels == False:
+            lonlabels = [0,0,0,0]
+
             
         self.fillcontinents(color=[0.6,0.6,0.6],
                             lake_color=[0.9,0.9,0.9])
         if len(self.merid)>0:
-            self.drawmeridians(self.merid,
+            alpha(self.drawmeridians(self.merid,
                                color='k',
-                               fontsize=20,linewidth=2,
-                               labels=[0,0,0,0],
-                               dashes=[1,5],zorder=1)
+                               fontsize=20,
+                               linewidth=1,
+                               labels=lonlabels,
+                               dashes=[5,0],
+                               zorder=1))
+            alpha(self.drawmeridians(self.merid,
+                               color='w',
+                               fontsize=20,
+                               linewidth=1,
+                               labels=lonlabels,
+                               dashes=[5,5],
+                               zorder=1))
         if len(self.paral)>0:
-            self.drawparallels(self.paral,
+            alpha(self.drawparallels(self.paral,
                                color='k',
-                               fontsize=20,linewidth=2,
+                               fontsize=20,
+                               linewidth=1,
                                labels=latlabels,
                                labelstyle="+/-",
-                               dashes=[1,5],zorder=1)
+                               dashes=[5,0],
+                               zorder=1))
+            alpha(self.drawparallels(self.paral,
+                               color='w',
+                               fontsize=20,
+                               linewidth=1,
+                               labels=latlabels,
+                               labelstyle="+/-",
+                               dashes=[5,5],
+                               zorder=1))
         if hasattr(self,'scale_lon'):
-            self.drawmapscale(-69.6,43.35,-69.6,43.35,25)
+            self.drawmapscale(self.scale_lon, self.scale_lat,
+                              self.scale_lon, self.scale_lat, self.scale_dst)
 
     def rectangle(self,lon1,lat1,lon2,lat2,c='0.3',shading=None, step=100):
         """Draw a rectangle on the map and respect the projection.""" 
