@@ -1,3 +1,12 @@
+""" Add presets to matplotlib/basemap
+
+Projmap is a wrapper to matplotlib's Basemap module to make the usage
+of a map for a specific project or region simpler and more dependable.
+Projmap allows you to define all the parameters necessary to initiate
+Basemap in a config file. The package also has functions to nice
+looking maps with only one command.
+
+"""
 import ConfigParser
 import json
 import os
@@ -7,14 +16,15 @@ import pylab as pl
 from mpl_toolkits.basemap import Basemap
 
 class Projmap(Basemap):
-    def __init__(self,region, **kwargs):
+    """ Extension of matplotlib/Basemap"""
+    def __init__(self, region, **kwargs):
         """Init basemap instance using data from config files"""
         self.basedir =  os.path.dirname(os.path.abspath(__file__))
         self.region = region
         self.inkwargs = kwargs
         self.read_configfile()
         for k,v in self.inkwargs.iteritems():
-            self.__dict__[k] = v 
+            self.__dict__[k] = v
         Basemap.__init__(self, **self.base_kwargs)
 
     def read_configfile(self):
@@ -65,22 +75,22 @@ class Projmap(Basemap):
         def alpha(lH):
             for l in lH.items():
                 l[1][0][0].set_alpha(0.5)
-        if hasattr(self, "latlabels"): latlabels = self.latlabels
-        if hasattr(self, "lonlabels"): lonlabels = self.lonlabels
-            
+        if hasattr(self, "latlabels"):
+            latlabels = self.latlabels
+        if hasattr(self, "lonlabels"):
+            lonlabels = self.lonlabels
         if (latlabels == True):
-            latlabels = [1,0,0,0]
+            latlabels = [1, 0, 0, 0]
         elif latlabels == False:
-            latlabels = [0,0,0,0]
+            latlabels = [0, 0, 0, 0]
         if (lonlabels == True):
-            lonlabels = [1,0,0,0]
+            lonlabels = [1, 0, 0, 0]
         elif lonlabels == False:
-            lonlabels = [0,0,0,0]
+            lonlabels = [0, 0, 0, 0]
 
-            
-        self.fillcontinents(color=[0.6,0.6,0.6],
-                            lake_color=[0.9,0.9,0.9])
-        if len(self.merid)>0:
+        self.fillcontinents(color=[0.6, 0.6, 0.6],
+                            lake_color=[0.9, 0.9, 0.9])
+        if len(self.merid) > 0:
             alpha(self.drawmeridians(self.merid,
                                color='k',
                                fontsize=20,
@@ -95,7 +105,7 @@ class Projmap(Basemap):
                                labels=lonlabels,
                                dashes=[5,5],
                                zorder=1))
-        if len(self.paral)>0:
+        if len(self.paral) > 0:
             alpha(self.drawparallels(self.paral,
                                color='k',
                                fontsize=20,
@@ -117,7 +127,7 @@ class Projmap(Basemap):
                               self.scale_lon, self.scale_lat, self.scale_dst)
 
     def rectangle(self,lon1,lat1,lon2,lat2,c='0.3',shading=None, step=100):
-        """Draw a rectangle on the map and respect the projection.""" 
+        """Draw a projection correct rectangle on the map."""
         class pos:
             x = np.array([])
             y = np.array([])
@@ -140,11 +150,11 @@ class Projmap(Basemap):
     def fronts(self,lglon=36, dlon=5, ax=None):
         """Plot fronts in the Southern Ocean """
         frontdir = self.basedir + "/data/"
-        
+
         def plotfront(frontFile,fname, lon):
             frmat = np.genfromtxt(frontFile)
-            mask = frmat[:,0] < -180 + self.merid_offset  
-            frmat[mask, 0] = frmat[mask, 0] + 360 
+            mask = frmat[:,0] < -180 + self.merid_offset
+            frmat[mask, 0] = frmat[mask, 0] + 360
             mask = ~(frmat[:,0] < np.nanmax(frmat[:,0]))
             x,y = self(frmat[:,0],frmat[:,1])
             x[mask] = np.nan
@@ -161,7 +171,7 @@ class Projmap(Basemap):
                 pl.text(xp,yp,fname,va='top',size='medium',
                         bbox=dict(facecolor='w', alpha=0.7,lw=0))
                 pl.text(xp,yp,fname,va='top',size='medium',)
-                
+
         plotfront(frontdir + 'saf.txt','saf', lglon)
         plotfront(frontdir + 'stf.txt','stf', lglon+dlon)
         #plotfront(frontdir + 'saccf.txt','saccf')
@@ -171,7 +181,7 @@ class Projmap(Basemap):
     def text(self, lon, lat, text, **kwargs):
         x,y = self(lon,lat)
         pl.text(x ,y, text, **kwargs)
-  
+
     def hrzbar(self):
         pl.colorbar(orientation='horizontal',pad=0, aspect=40,
                  fraction=0.0244)
