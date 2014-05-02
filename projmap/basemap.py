@@ -96,7 +96,7 @@ class Projmap(Basemap):
                                fontsize=20,
                                linewidth=1,
                                labels=lonlabels,
-                               dashes=[5,0],
+                               dashes=[10,1],
                                zorder=1))
             alpha(self.drawmeridians(self.merid,
                                color='w',
@@ -112,7 +112,7 @@ class Projmap(Basemap):
                                linewidth=1,
                                labels=latlabels,
                                labelstyle="+/-",
-                               dashes=[5,0],
+                               dashes=[10,1],
                                zorder=1))
             alpha(self.drawparallels(self.paral,
                                color='w',
@@ -122,6 +122,7 @@ class Projmap(Basemap):
                                labelstyle="+/-",
                                dashes=[5,5],
                                zorder=1))
+
         if hasattr(self,'scale_lon'):
             self.drawmapscale(self.scale_lon, self.scale_lat,
                               self.scale_lon, self.scale_lat, self.scale_dst)
