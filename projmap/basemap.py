@@ -23,6 +23,8 @@ class Projmap(Basemap):
         self.region = region
         self.inkwargs = kwargs
         self.read_configfile()
+        for key in ['llcrnrlon', 'urcrnrlon']:
+            self.base_kwargs[key] =  self.base_kwargs[key] + self.merid_offset
         for k,v in self.inkwargs.iteritems():
             self.__dict__[k] = v
         Basemap.__init__(self, **self.base_kwargs)
