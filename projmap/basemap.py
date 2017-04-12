@@ -24,7 +24,10 @@ class Projmap(Basemap):
         self.inkwargs = kwargs
         self.read_configfile()
         for key in ['llcrnrlon', 'urcrnrlon']:
-            self.base_kwargs[key] =  self.base_kwargs[key] + self.merid_offset
+            try:
+                self.base_kwargs[key] =  self.base_kwargs[key]+self.merid_offset
+            except KeyError:
+                pass
         for k,v in self.inkwargs.iteritems():
             self.__dict__[k] = v
         Basemap.__init__(self, **self.base_kwargs)
@@ -90,8 +93,13 @@ class Projmap(Basemap):
         elif lonlabels == False:
             lonlabels = [0, 0, 0, 0]
 
-        self.fillcontinents(color=[0.6, 0.6, 0.6],
-                            lake_color=[0.9, 0.9, 0.9])
+        lakecolor = getattr(self, "lakecolor", "0.9")
+        landcolor = getattr(self, "landcolor", "0.6")
+        self.fillcontinents(color=landcolor, lake_color=lakecolor)
+        if hasattr(self, "oceancolor"):
+            self.drawmapboundary(fill_color=self.oceancolor)
+        if hasattr(self, "bordercolor"):
+            self.drawcountries(color=self.bordercolor, linewidth=0.25)
         if len(self.merid) > 0:
             alpha(self.drawmeridians(self.merid,
                                color='k',
