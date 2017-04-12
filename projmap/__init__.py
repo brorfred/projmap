@@ -89,7 +89,7 @@ def list(region=""):
         for cfg_file in cfg_file_list:
             cfg.read(cfg_file)
             if cfg.sections():
-                (print "\nRegions in \n" + cfg_file + ":")
+                print ("\nRegions in \n" + cfg_file + ":")
                 for sect in cfg.sections():
                     desc = ""
                     if "proj.description" in cfg.options(sect):
