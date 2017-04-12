@@ -57,18 +57,19 @@ proj.paral         List with positions for parallels
 proj.merid_offset  East-west offset of the map from -180 - 180 deg.
 
 """
-from basemap import Projmap
-from basemap import Projmap as Basemap
+from projmap import Projmap
+from projmap import Projmap as Basemap
+
+import six
 
 import os
-import ConfigParser
-
+from six.moves import configparser
 
 def list(region=""):
     """List region information
           List options associated with a handle or
           all available regions if handle is not set."""
-    cfg = ConfigParser.ConfigParser()
+    cfg = configparser.ConfigParser()
 
     basedir =  os.path.dirname(os.path.abspath(__file__))
     cfg_file_list = [os.curdir + "/map_regions.cfg",
