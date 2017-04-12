@@ -94,5 +94,5 @@ def list(region=""):
                     desc = ""
                     if "proj.description" in cfg.options(sect):
                         desc = cfg.get(sect,'proj.description')
-                    print "   %s:   %s" % (sect,desc)
+                    print ("   %s:   %s" % (sect,desc))
 
