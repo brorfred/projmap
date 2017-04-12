@@ -58,8 +58,8 @@ proj.paral         List with positions for parallels
 proj.merid_offset  East-west offset of the map from -180 - 180 deg.
 
 """
-from projmap import Projmap
-from projmap import Projmap as Basemap
+from .basemap import Projmap
+from .basemap import Projmap as Basemap
 
 import six
 

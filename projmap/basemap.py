@@ -1,3 +1,4 @@
+from __future__ import print_function
 """ Add presets to matplotlib/basemap
 
 Projmap is a wrapper to matplotlib's Basemap module to make the usage
@@ -7,7 +8,9 @@ Basemap in a config file. The package also has functions to nice
 looking maps with only one command.
 
 """
-import ConfigParser
+import six
+from six.moves import configparser
+
 import json
 import os
 
@@ -24,17 +27,14 @@ class Projmap(Basemap):
         self.inkwargs = kwargs
         self.read_configfile()
         for key in ['llcrnrlon', 'urcrnrlon']:
-            try:
-                self.base_kwargs[key] =  self.base_kwargs[key]+self.merid_offset
-            except KeyError:
-                pass
-        for k,v in self.inkwargs.iteritems():
+            self.base_kwargs[key] =  self.base_kwargs[key] + self.merid_offset
+        for k,v in six.iteritems(self.inkwargs):
             self.__dict__[k] = v
         Basemap.__init__(self, **self.base_kwargs)
 
     def read_configfile(self):
         """Read and parse the config file"""
-        cfg = ConfigParser.ConfigParser()
+        cfg = configparser.ConfigParser()
 
         def openfile(fname):
             self.map_regions_file = fname
@@ -65,8 +65,8 @@ class Projmap(Basemap):
                 else:
                     self.__dict__[selfkey] = val
             else:
-                print "Unknown option: " + key
-                print "Remember to prefix options with base or self"
+                print ("Unknown option: " + key)
+                print ("Remember to prefix options with base or self")
 
         for key,val in cfg.items(self.region):
             try:
@@ -93,13 +93,8 @@ class Projmap(Basemap):
         elif lonlabels == False:
             lonlabels = [0, 0, 0, 0]
 
-        lakecolor = getattr(self, "lakecolor", "0.9")
-        landcolor = getattr(self, "landcolor", "0.6")
-        self.fillcontinents(color=landcolor, lake_color=lakecolor)
-        if hasattr(self, "oceancolor"):
-            self.drawmapboundary(fill_color=self.oceancolor)
-        if hasattr(self, "bordercolor"):
-            self.drawcountries(color=self.bordercolor, linewidth=0.25)
+        self.fillcontinents(color=[0.6, 0.6, 0.6],
+                            lake_color=[0.9, 0.9, 0.9])
         if len(self.merid) > 0:
             alpha(self.drawmeridians(self.merid,
                                color='k',
