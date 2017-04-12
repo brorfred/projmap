@@ -84,7 +84,7 @@ def list(region=""):
                (region,cfg_file))
         print ("and has the following options:\n")
         for key,val in cfg.items(region):
-            print "   %s:   %s" % (key,val)
+            print ("   %s:   %s" % (key,val))
     else:
         for cfg_file in cfg_file_list:
             cfg.read(cfg_file)

@@ -6,6 +6,7 @@ projmap/basemap.py
 projmap/hitta.py
 projmap/map_region.py
 projmap/map_regions.cfg
+projmap/projmap.py
 projmap/data/pf.txt
 projmap/data/saccf.txt
 projmap/data/saf.txt
