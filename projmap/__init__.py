@@ -1,3 +1,4 @@
+from __future__ import print_function
 """A wrapper for the mpl_toolkit Basemap class
 
 Projmap helps with setting up projections and domains for areas
@@ -81,14 +82,14 @@ def list(region=""):
             if region in cfg.sections(): break
         print ("\n\nThe region -%s- was found in \n \n   %s:\n " %
                (region,cfg_file))
-        print "and has the following options:\n"
+        print ("and has the following options:\n")
         for key,val in cfg.items(region):
             print "   %s:   %s" % (key,val)
     else:
         for cfg_file in cfg_file_list:
             cfg.read(cfg_file)
             if cfg.sections():
-                print "\nRegions in \n" + cfg_file + ":"
+                (print "\nRegions in \n" + cfg_file + ":")
                 for sect in cfg.sections():
                     desc = ""
                     if "proj.description" in cfg.options(sect):
