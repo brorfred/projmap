@@ -8,10 +8,10 @@ def projfig(label='',figno=[],lev=0,dpi=100):
     stack =  traceback.extract_stack()
     parfun = stack[-2][2]
     namefun  = stack[-2][0][:-3]
-    print parfun, namefun
-    print "---"
-    print stack[-2]
-    print "---"
+    print(parfun, namefun)
+    print("---")
+    print(stack[-2])
+    print("---")
 
     figno = pl.gcf().number
     figdir = os.getcwd() + '/figs/' + namefun + "/" + parfun + '/'
@@ -20,7 +20,7 @@ def projfig(label='',figno=[],lev=0,dpi=100):
     except OSError:
         pass
     file = '%s/fig_%02i_%s.png' % (figdir, figno, label)
-    print file
+    print(file)
     pl.savefig(file, dpi=dpi)
 
 def WRY():

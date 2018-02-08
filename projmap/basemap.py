@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 """ Add presets to matplotlib/basemap
 
 Projmap is a wrapper to matplotlib's Basemap module to make the usage
@@ -52,14 +52,14 @@ class Projmap(Basemap):
         def splitkey(key, val):
             if "base." in key:
                 basekey = key[5:]
-                if basekey in self.inkwargs.keys():
+                if basekey in list(self.inkwargs.keys()):
                     self.base_kwargs[basekey] = self.inkwargs[basekey]
                     del self.inkwargs[basekey]
                 else:
                     self.base_kwargs[basekey] = val
             elif "proj." in key:
                 selfkey = key[5:]
-                if selfkey in self.inkwargs.keys():
+                if selfkey in list(self.inkwargs.keys()):
                     self.__dict__[selfkey] = self.inkwargs[selfkey]
                     del self.inkwargs[selfkey]
                 else:
@@ -78,7 +78,7 @@ class Projmap(Basemap):
     def nice(self,latlabels=True,lonlabels=True):
         """ Draw land, parallells and meridians on a map"""
         def alpha(lH):
-            for l in lH.items():
+            for l in list(lH.items()):
                 l[1][0][0].set_alpha(0.5)
         if hasattr(self, "latlabels"):
             latlabels = self.latlabels
@@ -149,7 +149,7 @@ class Projmap(Basemap):
         line([lon2]*step, np.linspace(lat2,lat1,step))
         line(np.linspace(lon2,lon1,step), [lat2]*step)
         if shading:
-            p = pl.Polygon(zip(pos.x, pos.y),facecolor=shading, edgecolor=c,
+            p = pl.Polygon(list(zip(pos.x, pos.y)),facecolor=shading, edgecolor=c,
                            alpha=0.5,linewidth=1)
             pl.gca().add_patch(p)
 
