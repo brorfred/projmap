@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 """A wrapper for the mpl_toolkit Basemap class
 
 Projmap helps with setting up projections and domains for areas

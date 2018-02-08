@@ -13,8 +13,8 @@ pip install --user -e git+https://github.com/brorfred/projmap.git#egg=projmap
 
  = Define a project in one of the following files: =
 
-./region_maps.cfg
-~/.region_maps.cfg
+./map_regions.cfg
+~/.map_regions.cfg
 
 An example project can look like this:
 
@@ -25,21 +25,21 @@ base.llcrnrlon:   -70      # All keywords can be used
 base.llcrnrlat:   -60      # Read more at
 base.urcrnrlat:   -20      # http://matplotlib.org/basemap/users/mapsetup.html
 base.urcrnrlon:    30      #
-base.lat_0:       -40      # Remember to begin all keyworrds with 'base.'
+base.lat_0:       -40      # Remember to begin all keywords with 'base.'
 base.lon_0:         0      #
-base.resolution:    i      # 
+base.resolution:    i      #
 proj.merid:        [-60, -40, -20, 0, 20, 40]   # Where to draw meridians
-proj.paral:        [-60, -50, -40, -30]         # Where to drar parallels
+proj.paral:        [-60, -50, -40, -30]         # Where to draw parallels
 
 
 Example of usage:
 
->>> import projmap 
+>>> import projmap
 >>>
 >>> #list all available regions
->>> projmap.list()  
+>>> projmap.list()
 >>> #lists all settings for a region
->>> projmap.list('  #handle') 
+>>> projmap.list('  #handle')
 >>>
 >>> #Create a map instance
 >>> mp = projmap.Projmap('handle')
