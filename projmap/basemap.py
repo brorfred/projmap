@@ -28,8 +28,8 @@ class Projmap(Basemap):
         self.read_configfile()
         for key in ['llcrnrlon', 'urcrnrlon']:
             self.base_kwargs[key] =  self.base_kwargs[key] + self.merid_offset
-        for k,v in six.iteritems(self.inkwargs):
-            self.__dict__[k] = v
+        for key,val in six.iteritems(self.inkwargs):
+            setattr(self, key, val)
         Basemap.__init__(self, **self.base_kwargs)
 
     def read_configfile(self):
@@ -89,7 +89,7 @@ class Projmap(Basemap):
         elif latlabels == False:
             latlabels = [0, 0, 0, 0]
         if (lonlabels == True):
-            lonlabels = [1, 0, 0, 0]
+            lonlabels = [0, 0, 0, 1]
         elif lonlabels == False:
             lonlabels = [0, 0, 0, 0]
 
@@ -98,14 +98,14 @@ class Projmap(Basemap):
         if len(self.merid) > 0:
             alpha(self.drawmeridians(self.merid,
                                color='k',
-                               fontsize=20,
+                               fontsize=self.fontsize,
                                linewidth=1,
                                labels=lonlabels,
                                dashes=[10,1],
                                zorder=1))
             alpha(self.drawmeridians(self.merid,
                                color='w',
-                               fontsize=20,
+                               fontsize=self.fontsize,
                                linewidth=1,
                                labels=lonlabels,
                                dashes=[5,5],
@@ -113,18 +113,16 @@ class Projmap(Basemap):
         if len(self.paral) > 0:
             alpha(self.drawparallels(self.paral,
                                color='k',
-                               fontsize=20,
+                               fontsize=self.fontsize,
                                linewidth=1,
                                labels=latlabels,
-                               labelstyle="+/-",
                                dashes=[10,1],
                                zorder=1))
             alpha(self.drawparallels(self.paral,
                                color='w',
-                               fontsize=20,
+                               fontsize=self.fontsize,
                                linewidth=1,
                                labels=latlabels,
-                               labelstyle="+/-",
                                dashes=[5,5],
                                zorder=1))
 
