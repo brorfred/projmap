@@ -88,6 +88,7 @@ class Projmap(object):
     
     def new_map(self, axes_kw={}, **proj_kw):
         """Create a map axes based on info from config file"""
+        self.fig = plt.gcf()
         axes_kw["projection"] = axes_kw.get("projection", self.proj)
         self.ax = plt.axes(**axes_kw)
         self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
@@ -133,8 +134,11 @@ class Projmap(object):
         if (len(arg) == 1) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
+        colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        ax.pcolormesh(*arg, **kwargs)
+        cb = ax.pcolormesh(*arg, **kwargs)
+        if colorbar is not None:
+            plt.colorbar(cb, orientation='horizontal', ticklocation='auto')
 
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -144,6 +148,17 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         ax.contourf(*arg, **kwargs)
 
+    def contour(self, *arg, **kwargs):
+        """Create a contourf plot in mapaxes"""
+        ax = self._get_or_create_axis(kwargs)
+        if (len(arg) < 3) & (self.lonobj is not None):
+            arg = (self.lonobj, self.latobj) + arg
+        if len(arg) == 4:
+            kwargs["levels"] = arg[-1]
+        kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
+        ax.contour(*arg, **kwargs)
+
+        
     def scatter(self, lonvec, latvec, *args, **kwargs):
         ax = self._get_or_create_axis(kwargs)
         kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
