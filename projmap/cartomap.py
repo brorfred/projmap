@@ -138,7 +138,13 @@ class Projmap(object):
         fieldname = kwargs.pop("fieldname", None)
         cb = ax.pcolormesh(*arg, **kwargs)
         if colorbar is not None:
-            plt.colorbar(cb, orientation='horizontal', ticklocation='auto')
+            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
+            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
+                             ticklocation='auto', fraction=40)
+            posn = ax.get_position()
+            self.cax.set_position([posn.x0, posn.y0-0.055,
+                                   posn.width, 0.04])
+
 
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -146,7 +152,16 @@ class Projmap(object):
         if (len(arg) < 3) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
-        ax.contourf(*arg, **kwargs)
+        colorbar = kwargs.pop("colorbar", None)
+        fieldname = kwargs.pop("fieldname", None)
+        cb = ax.contourf(*arg, **kwargs)
+        if colorbar is not None:
+            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
+            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
+                             ticklocation='auto', fraction=40)
+            posn = ax.get_position()
+            self.cax.set_position([posn.x0, posn.y0-0.045,
+                                   posn.width, 0.04])
 
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -156,17 +171,35 @@ class Projmap(object):
         if len(arg) == 4:
             kwargs["levels"] = arg[-1]
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
-        ax.contour(*arg, **kwargs)
+        colorbar = kwargs.pop("colorbar", None)
+        fieldname = kwargs.pop("fieldname", None)
+        cb = ax.contour(*arg, **kwargs)
+        if colorbar is not None:
+            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
+            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
+                             ticklocation='auto', fraction=40)
+            posn = ax.get_position()
+            self.cax.set_position([posn.x0, posn.y0-0.045,
+                                   posn.width, 0.04])
 
         
     def scatter(self, lonvec, latvec, *args, **kwargs):
         ax = self._get_or_create_axis(kwargs)
-        kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
         if len(args) > 0:
             kwargs["s"] = args[0]
         if len(args) > 1:
             kwargs["c"] = args[1]
-        ax.scatter(lonvec, latvec, **kwargs)
+        kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
+        colorbar = kwargs.pop("colorbar", None)
+        fieldname = kwargs.pop("fieldname", None)
+        cb = ax.scatter(lonvec, latvec, **kwargs)
+        if colorbar is not None:
+            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
+            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
+                             ticklocation='auto', fraction=40)
+            posn = ax.get_position()
+            self.cax.set_position([posn.x0, posn.y0-0.045,
+                                   posn.width, 0.04])
         
     def text(self, *args, **kwargs):
         ax = self._get_or_create_axis(kwargs)
