@@ -63,12 +63,15 @@ try:
     from .basemap import Projmap as Basemap
     HAS_BASEMAP = True
 except:
-    HAS_BASEMAP = True
+    HAS_BASEMAP = False
+
+try:
+    from .cartomap import Projmap
+    from .cartomap import Projmap as Map
+    HAS_CARTOPY = True
+except:
+    HAS_CARTOPY = False
     
-from .cartomap import Projmap
-from .cartomap import Projmap as Map
-
-
 import six
 
 import os
