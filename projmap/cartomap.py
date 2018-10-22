@@ -111,9 +111,9 @@ class Projmap(object):
     def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
                        squeeze=True, subplot_kw={}, gridspec_kw={},
                        fig_kw={}, **proj_kw):
+        plt.clf()
         fig_kw["num"] = fig_kw.get("num", plt.gcf().number)
         subplot_kw["projection"] = subplot_kw.get("projection", self.proj)
-        print(subplot_kw)
         self.fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols,
             sharex=sharex, sharey=sharey, squeeze=squeeze,
             subplot_kw=subplot_kw, gridspec_kw=gridspec_kw, **fig_kw)
@@ -124,28 +124,37 @@ class Projmap(object):
 
 
     def _get_or_create_axis(self, **kwargs):
-        """Return correct map axes or create new if needed""" 
-        if ((not getattr(self, "ax", None) in plt.gcf().get_axes()) and
-            (not hasattr(self, "axes"))):
+        """Return correct map axes or create new if needed"""
+        if (type(kwargs.get("ax"))==int):
+            if not hasattr(self, "axes"):
+                raise RuntimeError(
+                    "Call subplots before referencing axis by number")
+            if hasattr(self.axes, "flat"):
+                setattr(self, "ax", self.axes.flat[kwargs["ax"]])
+            else:
+                setattr(self, "ax", self.axes)
+        elif ((not getattr(self, "ax", None) in plt.gcf().get_axes())):
             self.new_map()
-        elif (type(kwargs.get("ax"))==int) and (hasattr(self, "axes")):
-            return self.fig.axes[kwargs.pop("ax")]
-        return kwargs.pop("ax", getattr(self, "ax", None))
+        elif kwargs.get("ax", None) is not None:
+             setattr(self, "ax", kwargs.pop("ax"))
+        return getattr(self, "ax")
 
     def pcolor(self, *arg, **kwargs):
         """Create a pcolor plot in mapaxes"""
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
+        print(ax)
         if (len(arg) == 1) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         self._cb = ax.pcolormesh(*arg, **kwargs)
-        self.colorbar()
+        if colorbar is not None:
+            self.colorbar()
 
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         if (len(arg) < 3) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
@@ -155,7 +164,7 @@ class Projmap(object):
     
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         if (len(arg) < 3) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         if len(arg) == 4:
@@ -166,7 +175,7 @@ class Projmap(object):
         self._cb = ax.contour(*arg, **kwargs)
       
     def colorbar(self, **kwargs):
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
         plt.colorbar(self._cb, cax=self.cax, orientation='horizontal',
                          ticklocation='auto', fraction=40)
@@ -174,7 +183,7 @@ class Projmap(object):
         self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
         def resize_colorbar(event):
             plt.draw()
-            ax = self._get_or_create_axis(kwargs)
+            ax = self._get_or_create_axis(**kwargs)
             posn = ax.get_position()
             self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
         self.fig.canvas.mpl_connect('resize_event', resize_colorbar)
@@ -182,7 +191,7 @@ class Projmap(object):
 
         
     def scatter(self, lonvec, latvec, *args, **kwargs):
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         if len(args) > 0:
             kwargs["s"] = args[0]
         if len(args) > 1:
@@ -200,7 +209,7 @@ class Projmap(object):
                                    posn.width, 0.04])
         
     def text(self, *args, **kwargs):
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(**kwargs)
         kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
         if len(args) == 1:
             lat = self.lat1 + (self.lat2-self.lat1) * 0.9
@@ -214,7 +223,7 @@ class Projmap(object):
 
     def rectangle(self, lon1,lat1, lon2,lat2, step=100, shade=None, **kwargs):
         """Draw a projection correct rectangle on the map."""
-        ax = self._get_or_create_axis(kwargs)
+        ax = self._get_or_create_axis(**kwargs)
         kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
         kwargs["c"] = kwargs.get("c", "0.5")
         latlist = []
