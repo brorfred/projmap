@@ -142,7 +142,6 @@ class Projmap(object):
     def pcolor(self, *arg, **kwargs):
         """Create a pcolor plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
-        print(ax)
         if (len(arg) == 1) & (self.lonobj is not None):
             arg = (self.lonobj, self.latobj) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
@@ -209,7 +208,7 @@ class Projmap(object):
                                    posn.width, 0.04])
         
     def text(self, *args, **kwargs):
-        ax = self._get_or_create_axis(**kwargs)
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
         if len(args) == 1:
             lat = self.lat1 + (self.lat2-self.lat1) * 0.9
