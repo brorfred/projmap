@@ -93,41 +93,45 @@ class Projmap(object):
         self.ax = plt.axes(**axes_kw)
         self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
                       ccrs.Geodetic())
+        self.fig.canvas.draw()
+
 
     def nice(self, **proj_kw):
-        if ((not getattr(self, "ax", None) in plt.gcf().get_axes()) and
-            (not hasattr(self, "axes"))):
-            self.new_map()
+        """Draw land and lat-lon grid"""
+        ax= self._get_or_create_axis(**proj_kw)
         arglist = ["landresolution",]
         for key in arglist:
              proj_kw[key] = proj_kw.get(key, getattr(self, key))
         land = cartopy.feature.NaturalEarthFeature('physical', 'land',
                    proj_kw["landresolution"], edgecolor="0.5", facecolor="0.7")
-        self.ax.add_feature(land)
-        self.ax.add_feature(cartopy.feature.BORDERS,
-                            linewidth=1, edgecolor="0.8")
-        self.ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
+        ax.add_feature(land)
+        ax.add_feature(cartopy.feature.BORDERS, linewidth=1, edgecolor="0.8")
+        ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
 
-    def subplots(self, nrows=1, ncols=1, sharex=False, sharey=False,
-                       squeeze=True, subplot_kw={}, gridspec_kw=None,
-                       fig_kw=None, **proj_kw):
-        fig_kw["num"] = fig_kw.get("num", gcf().number)
+    def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
+                       squeeze=True, subplot_kw={}, gridspec_kw={},
+                       fig_kw={}, **proj_kw):
+        fig_kw["num"] = fig_kw.get("num", plt.gcf().number)
         subplot_kw["projection"] = subplot_kw.get("projection", self.proj)
+        print(subplot_kw)
         self.fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols,
-                                           sharex=sharex, sharey=sharey,
-                                           squeeze=True, subplot_kw={},
-                                           gridspec_kw=None, fig_kw=None,
-                                           **proj_kw)
+            sharex=sharex, sharey=sharey, squeeze=squeeze,
+            subplot_kw=subplot_kw, gridspec_kw=gridspec_kw, **fig_kw)
+        for ax in self.fig.axes:
+            ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
+                           ccrs.Geodetic())
         return self.fig, self.axes
 
 
-    def _get_or_create_axis(self, kwargs):
+    def _get_or_create_axis(self, **kwargs):
+        """Return correct map axes or create new if needed""" 
         if ((not getattr(self, "ax", None) in plt.gcf().get_axes()) and
             (not hasattr(self, "axes"))):
             self.new_map()
-        return kwargs.pop("ax", self.ax)
+        elif (type(kwargs.get("ax"))==int) and (hasattr(self, "axes")):
+            return self.fig.axes[kwargs.pop("ax")]
+        return kwargs.pop("ax", getattr(self, "ax", None))
 
-    
     def pcolor(self, *arg, **kwargs):
         """Create a pcolor plot in mapaxes"""
         ax = self._get_or_create_axis(kwargs)
@@ -136,15 +140,8 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        cb = ax.pcolormesh(*arg, **kwargs)
-        if colorbar is not None:
-            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
-            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
-                             ticklocation='auto', fraction=40)
-            posn = ax.get_position()
-            self.cax.set_position([posn.x0, posn.y0-0.055,
-                                   posn.width, 0.04])
-
+        self._cb = ax.pcolormesh(*arg, **kwargs)
+        self.colorbar()
 
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -154,15 +151,8 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        cb = ax.contourf(*arg, **kwargs)
-        if colorbar is not None:
-            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
-            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
-                             ticklocation='auto', fraction=40)
-            posn = ax.get_position()
-            self.cax.set_position([posn.x0, posn.y0-0.045,
-                                   posn.width, 0.04])
-
+        self._cb = ax.contourf(*arg, **kwargs)
+    
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(kwargs)
@@ -173,14 +163,22 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        cb = ax.contour(*arg, **kwargs)
-        if colorbar is not None:
-            self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
-            plt.colorbar(cb, cax=self.cax, orientation='horizontal',
-                             ticklocation='auto', fraction=40)
+        self._cb = ax.contour(*arg, **kwargs)
+      
+    def colorbar(self, **kwargs):
+        ax = self._get_or_create_axis(kwargs)
+        self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
+        plt.colorbar(self._cb, cax=self.cax, orientation='horizontal',
+                         ticklocation='auto', fraction=40)
+        posn = ax.get_position()
+        self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
+        def resize_colorbar(event):
+            plt.draw()
+            ax = self._get_or_create_axis(kwargs)
             posn = ax.get_position()
-            self.cax.set_position([posn.x0, posn.y0-0.045,
-                                   posn.width, 0.04])
+            self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
+        self.fig.canvas.mpl_connect('resize_event', resize_colorbar)
+
 
         
     def scatter(self, lonvec, latvec, *args, **kwargs):

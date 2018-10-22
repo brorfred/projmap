@@ -62,22 +62,21 @@ proj.merid_offset  East-west offset of the map from -180 - 180 deg.
 try:
     from .basemap import Projmap as Basemap
     HAS_BASEMAP = True
-except:
+except ImportError:
     HAS_BASEMAP = False
 
 try:
     from .cartomap import Projmap
     from .cartomap import Projmap as Map
     HAS_CARTOPY = True
-except:
+except ImportError:
     HAS_CARTOPY = False
     
 import six
 
-import os
-from six.moves import configparser
+#from config import list as listregions
 
-def list(region=""):
+def show_regions(region=""):
     """List region information
           List options associated with a handle or
           all available regions if handle is not set."""
@@ -106,4 +105,3 @@ def list(region=""):
                     if "proj.description" in cfg.options(sect):
                         desc = cfg.get(sect,'proj.description')
                     print ("   %s:   %s" % (sect,desc))
-
