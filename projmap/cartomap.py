@@ -16,7 +16,7 @@ import cartopy.feature
 
 class Projmap(object):
 
-    def __init__(self, region, latobj=None, lonobj=None, **proj_kw):
+    def __init__(self, region, latobj=None, lonobj=None, clf=True, **proj_kw):
         """Initiate class instance"""
         self.basedir = os.path.dirname(os.path.abspath(__file__))
         self.region = region
@@ -37,7 +37,7 @@ class Projmap(object):
         for k1, k2 in zip(base_kw_list, proj_kw_list):
             setattr(self, k2, self.base_kw.get(k1))
         setattr(self, "landresolution", self.ccrs_kw["landresolution"])
-        if  len(plt.gcf().get_axes()) > 0:
+        if  (len(plt.gcf().get_axes()) > 0) & (clf==True):
             plt.clf()
 
     @property
@@ -96,14 +96,34 @@ class Projmap(object):
         self.fig.canvas.draw()
 
 
+    def add_subplot(self, *args, axes_kw={}, **proj_kw):
+        """Create a map axes based on info from config file"""
+        axes_kw["projection"] = axes_kw.get("projection", self.proj)
+        self.ax = plt.gcf().add_subplot(*args, **axes_kw)
+        self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
+                      ccrs.Geodetic())
+        #self.fig.canvas.draw()
+
+    def add_land(self, edgecolor="0.5", facecolor="0.7", **proj_kw):
+        """Draw land and lat-lon grid"""
+        ax= self._get_or_create_axis(**proj_kw)
+        arglist = ["landresolution",]
+        for key in arglist:
+            proj_kw[key] = proj_kw.get(key, getattr(self, key))
+        land = cartopy.feature.NaturalEarthFeature(
+            'physical', 'land', proj_kw["landresolution"],
+            edgecolor=edgecolor, facecolor=facecolor)
+        ax.add_feature(land)
+
     def nice(self, **proj_kw):
         """Draw land and lat-lon grid"""
         ax= self._get_or_create_axis(**proj_kw)
         arglist = ["landresolution",]
         for key in arglist:
              proj_kw[key] = proj_kw.get(key, getattr(self, key))
-        land = cartopy.feature.NaturalEarthFeature('physical', 'land',
-                   proj_kw["landresolution"], edgecolor="0.5", facecolor="0.7")
+        land = cartopy.feature.NaturalEarthFeature(
+            'physical', 'land', proj_kw["landresolution"],
+            edgecolor="0.5", facecolor="0.7")
         ax.add_feature(land)
         ax.add_feature(cartopy.feature.BORDERS, linewidth=1, edgecolor="0.8")
         ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
