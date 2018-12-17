@@ -6,7 +6,7 @@ use as python setup.py sdist"""
 from setuptools import setup, find_packages
 
 setup(name='projmap',
-      version='0.8',
+      version='0.81',
       description='High level wrapper of matplotlib-Basemap',
       author='Bror Jonsson',
       author_email='brorfred@gmail.com',

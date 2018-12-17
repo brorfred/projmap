@@ -59,20 +59,15 @@ proj.merid_offset  East-west offset of the map from -180 - 180 deg.
 
 """
 #from .basemap import Projmap
-try:
-    from .basemap import Projmap as Basemap
-    HAS_BASEMAP = True
-except ImportError:
-    HAS_BASEMAP = False
+import six
 
-try:
+if six.PY3:
     from .cartomap import Projmap
     from .cartomap import Projmap as Map
-    HAS_CARTOPY = True
-except ImportError:
-    HAS_CARTOPY = False
-    
-import six
+else:
+    from .basemap import Projmap as Basemap
+    from .basemap import Projmap as Map
+
 
 #from config import list as listregions
 
