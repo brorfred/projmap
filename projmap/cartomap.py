@@ -8,7 +8,6 @@ import os
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 import cartopy.crs as ccrs
 import cartopy.feature
