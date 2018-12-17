@@ -258,7 +258,7 @@ class Projmap(object):
         line(np.linspace(lon2,lon1,step), [lat2]*step)
         if shade is not None:
             lonlats = np.vstack((np.hstack(lonlist), np.hstack(latlist))).T
-            p = plt.Polygon(lonlats, facecolor=patch, edgecolor=kwargs["c"],
+            p = plt.Polygon(lonlats, facecolor=shade, edgecolor=kwargs["c"],
                             alpha=0.5, linewidth=1,
                             transform=kwargs["transform"])
             ax.add_patch(p)
