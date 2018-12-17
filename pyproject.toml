@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "projmap"
+version = "0.8.3"
+description = "High level wrapper of matplotlibs mapping package"
+authors = ["Bror Jonsson <brorfred@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "^1.15"
+six = "^1.12"
+matplotlib = "^3.0"
+cartopy = "^0.17.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

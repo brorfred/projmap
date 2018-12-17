@@ -21,6 +21,7 @@ dist
 *.pyo
 *.tmp*
 .pytest_cache
+.tox
 
 ### Fortran files ###
 *.o

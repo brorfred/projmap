@@ -68,6 +68,7 @@ else:
     from .basemap import Projmap as Basemap
     from .basemap import Projmap as Map
 
+__version__ = '0.8.2'
 
 #from config import list as listregions
 
