@@ -8,6 +8,7 @@ import os
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import cartopy.crs as ccrs
 import cartopy.feature
@@ -50,7 +51,8 @@ class Projmap(object):
             return ccrs.LambertConformal(
                 central_latitude=self.lat0, central_longitude=self.lon0)       
         else:
-            return ccrs.Robinson()       
+            central_longitude = self.base_kw.get('central_longitude', 0)
+            return ccrs.Robinson(central_longitude=central_longitude)
         
     def read_configfile(self):
         """Read and parse the config file"""
@@ -122,9 +124,9 @@ class Projmap(object):
              proj_kw[key] = proj_kw.get(key, getattr(self, key))
         land = cartopy.feature.NaturalEarthFeature(
             'physical', 'land', proj_kw["landresolution"],
-            edgecolor="0.5", facecolor="0.7")
+            edgecolor="0.65", facecolor="0.7")
         ax.add_feature(land)
-        ax.add_feature(cartopy.feature.BORDERS, linewidth=1, edgecolor="0.8")
+        ax.add_feature(cartopy.feature.BORDERS, linewidth=0.25, edgecolor="0.8")
         ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
 
     def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
@@ -179,7 +181,7 @@ class Projmap(object):
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         self._cb = ax.contourf(*arg, **kwargs)
-    
+
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
@@ -191,6 +193,17 @@ class Projmap(object):
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         self._cb = ax.contour(*arg, **kwargs)
+
+    def streamplot(self, uvel=None, vvel=None, lon=None, lat=None, **kwargs):
+        """Create a contourf plot in mapaxes"""
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
+        lon = self.lonobj if lon is None else lon
+        lat = self.latobj if lat is None else lat
+        kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
+        colorbar = kwargs.pop("colorbar", None)
+        fieldname = kwargs.pop("fieldname", None)
+        self._cb = ax.streamplot(lon, lat, uvel, vvel, **kwargs)
+
       
     def colorbar(self, **kwargs):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
