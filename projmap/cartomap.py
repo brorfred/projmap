@@ -8,7 +8,6 @@ import os
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 import cartopy.crs as ccrs
 import cartopy.feature
@@ -16,13 +15,24 @@ import cartopy.feature
 
 class Projmap(object):
 
-    def __init__(self, region, latobj=None, lonobj=None, clf=True, **proj_kw):
+    def __init__(self, region, latarr=None, lonarr=None, clf=True, **proj_kw):
         """Initiate class instance"""
         self.basedir = os.path.dirname(os.path.abspath(__file__))
         self.region = region
-        self.lonobj = lonobj
-        self.latobj = latobj
         self.proj_kw = proj_kw
+
+        if lonarr is not None:
+            self.lonarr = lonarr
+        else:
+            for key in ["lon", "lonvec", "lonmat", "llon"]:
+                if key in proj_kw:
+                    self.lonarr = proj_kw.get(key)
+        if latarr is not None:
+            self.latarr = latarr
+        else:
+            for key in ["lat", "latvec", "latmat", "llat"]:
+                if key in proj_kw:
+                    self.latarr = proj_kw.get(key)
         
         self.read_configfile()
         for key in ['llcrnrlon', 'urcrnrlon']:
@@ -116,7 +126,7 @@ class Projmap(object):
             edgecolor=edgecolor, facecolor=facecolor)
         ax.add_feature(land)
 
-    def nice(self, **proj_kw):
+    def nice(self, linewidth=0.1, facecolor=None, **proj_kw):
         """Draw land and lat-lon grid"""
         ax= self._get_or_create_axis(**proj_kw)
         arglist = ["landresolution",]
@@ -124,10 +134,14 @@ class Projmap(object):
              proj_kw[key] = proj_kw.get(key, getattr(self, key))
         land = cartopy.feature.NaturalEarthFeature(
             'physical', 'land', proj_kw["landresolution"],
-            edgecolor="0.65", facecolor="0.7")
+            edgecolor="0.7", linewidth=linewidth, facecolor="0.7")
         ax.add_feature(land)
-        ax.add_feature(cartopy.feature.BORDERS, linewidth=0.25, edgecolor="0.8")
+        ax.add_feature(cartopy.feature.BORDERS,
+                       linewidth=linewidth, edgecolor="0.8")
         ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
+        if facecolor is not None:
+            ax.background_patch.set_facecolor(facecolor)
+
 
     def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
                        squeeze=True, subplot_kw={}, gridspec_kw={},
@@ -163,8 +177,8 @@ class Projmap(object):
     def pcolor(self, *arg, **kwargs):
         """Create a pcolor plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
-        if (len(arg) == 1) & (self.lonobj is not None):
-            arg = (self.lonobj, self.latobj) + arg
+        if (len(arg) == 1) & (self.lonarr is not None):
+            arg = (self.lonarr, self.latarr) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
@@ -175,8 +189,8 @@ class Projmap(object):
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
-        if (len(arg) < 3) & (self.lonobj is not None):
-            arg = (self.lonobj, self.latobj) + arg
+        if (len(arg) < 3) & (self.lonarr is not None):
+            arg = (self.lonarr, self.latarr) + arg
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
@@ -185,8 +199,8 @@ class Projmap(object):
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
-        if (len(arg) < 3) & (self.lonobj is not None):
-            arg = (self.lonobj, self.latobj) + arg
+        if (len(arg) < 3) & (self.lonarr is not None):
+            arg = (self.lonarr, self.latarr) + arg
         if len(arg) == 4:
             kwargs["levels"] = arg[-1]
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
@@ -197,8 +211,8 @@ class Projmap(object):
     def streamplot(self, uvel=None, vvel=None, lon=None, lat=None, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
-        lon = self.lonobj if lon is None else lon
-        lat = self.latobj if lat is None else lat
+        lon = self.lonarr if lon is None else lon
+        lat = self.latarr if lat is None else lat
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
