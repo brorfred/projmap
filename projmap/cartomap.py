@@ -21,18 +21,14 @@ class Projmap(object):
         self.region = region
         self.proj_kw = proj_kw
 
-        if lonarr is not None:
-            self.lonarr = lonarr
-        else:
-            for key in ["lon", "lonvec", "lonmat", "llon"]:
-                if key in proj_kw:
-                    self.lonarr = proj_kw.get(key)
-        if latarr is not None:
-            self.latarr = latarr
-        else:
-            for key in ["lat", "latvec", "latmat", "llat"]:
-                if key in proj_kw:
-                    self.latarr = proj_kw.get(key)
+        self.lonarr = lonarr
+        for key in ["lon", "lonvec", "lonmat", "llon"]:
+            if key in proj_kw:
+                self.lonarr = proj_kw.get(key)
+        self.latarr = latarr
+        for key in ["lat", "latvec", "latmat", "llat"]:
+            if key in proj_kw:
+                self.latarr = proj_kw.get(key)
         
         self.read_configfile()
         for key in ['llcrnrlon', 'urcrnrlon']:
