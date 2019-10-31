@@ -49,17 +49,20 @@ class Projmap(object):
     @property
     def proj(self):
         """Create main  projection object"""
-        if (self.projname=="lcc"):
-            self.llproj = ccrs.Geodetic()
+        self.llproj = ccrs.Geodetic()
+        if self.projname=="lcc":
             if not hasattr(self, "lat0"):
                 self.lat0 = self.lat1 + (self.lat2-self.lat1)/2
             if not hasattr(self, "lon0"):
                 self.lon0 = self.lon1 + (self.lon2-self.lon1)/2
             return ccrs.LambertConformal(
                 central_latitude=self.lat0, central_longitude=self.lon0)
-        elif "north_stereo":
+        elif self.projname=="north_stereo":
               self.llproj = ccrs.PlateCarree()
               return ccrs.NorthPolarStereo()
+        elif self.projname=="south_stereo":
+              self.llproj = ccrs.PlateCarree()
+              return ccrs.SouthPolarStereo()
         else:
             central_longitude = self.base_kw.get('central_longitude', 0)
             return ccrs.Robinson(central_longitude=central_longitude)
