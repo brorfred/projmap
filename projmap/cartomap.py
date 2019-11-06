@@ -105,7 +105,7 @@ class Projmap(object):
         self.fig = plt.gcf()
         axes_kw["projection"] = axes_kw.get("projection", self.proj)
         self.ax = plt.axes(**axes_kw)
-        self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
+        self.set_extent()
         self.fig.canvas.draw()
 
 
@@ -113,8 +113,7 @@ class Projmap(object):
         """Create a map axes based on info from config file"""
         axes_kw["projection"] = axes_kw.get("projection", self.proj)
         self.ax = plt.gcf().add_subplot(*args, **axes_kw)
-        self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
-                      ccrs.Geodetic())
+        self.set_extent()
         #self.fig.canvas.draw()
 
     def add_land(self, edgecolor="0.5", facecolor="0.7", **proj_kw):
@@ -127,6 +126,12 @@ class Projmap(object):
             'physical', 'land', proj_kw["landresolution"],
             edgecolor=edgecolor, facecolor=facecolor)
         ax.add_feature(land)
+
+    def set_extent(self, **kwargs):
+        for attr in ["lon1", "lon2", "lat1", "lat2"]:
+            setattr(self, attr, kwargs.get(attr, getattr(self, attr)))
+        self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
+
 
     def nice(self, linewidth=0.1, facecolor=None, **proj_kw):
         """Draw land and lat-lon grid"""
@@ -197,6 +202,8 @@ class Projmap(object):
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         self._cb = ax.contourf(*arg, **kwargs)
+        if colorbar is not None:
+            self.colorbar()
 
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -209,7 +216,9 @@ class Projmap(object):
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         self._cb = ax.contour(*arg, **kwargs)
-
+        if colorbar is not None:
+            self.colorbar()
+            
     def streamplot(self, uvel=None, vvel=None, lon=None, lat=None, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
