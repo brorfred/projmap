@@ -128,6 +128,7 @@ class Projmap(object):
         ax.add_feature(land)
 
     def set_extent(self, **kwargs):
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         for attr in ["lon1", "lon2", "lat1", "lat2"]:
             setattr(self, attr, kwargs.get(attr, getattr(self, attr)))
         self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
@@ -218,7 +219,7 @@ class Projmap(object):
         self._cb = ax.contour(*arg, **kwargs)
         if colorbar is not None:
             self.colorbar()
-            
+
     def streamplot(self, uvel=None, vvel=None, lon=None, lat=None, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
