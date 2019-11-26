@@ -1,9 +1,11 @@
-import six
-from six.moves import configparser
-
+"""Module to simplify the use of cartopy"""
+# pylint: disable=bad-indentation
+# pylint: disable=no-member
 import json
 import os
 
+import six
+from six.moves import configparser
 
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
@@ -48,7 +50,7 @@ class Projmap(object):
 
     @property
     def proj(self):
-        """Create main  projection object"""
+        """Create main projection object"""
         self.llproj = ccrs.Geodetic()
         if self.projname=="lcc":
             if not hasattr(self, "lat0"):
@@ -66,7 +68,14 @@ class Projmap(object):
         else:
             central_longitude = self.base_kw.get('central_longitude', 0)
             return ccrs.Robinson(central_longitude=central_longitude)
-        
+
+    def add_projection_to_dict(self, axes_kw=None):
+        """Return either default of chosen projection object"""
+        if axes_kw is None:
+            axes_kw = {}
+        axes_kw["projection"] = axes_kw.get("projection", self.proj)
+        return axes_kw
+
     def read_configfile(self):
         """Read and parse the config file"""
         cfg = configparser.ConfigParser()
@@ -100,18 +109,17 @@ class Projmap(object):
             except ValueError:
                 splitkey(key, val)
     
-    def new_map(self, axes_kw={}, **proj_kw):
+    def new_map(self, axes_kw=None, **proj_kw):
         """Create a map axes based on info from config file"""
         self.fig = plt.gcf()
-        axes_kw["projection"] = axes_kw.get("projection", self.proj)
+        axes_kw = self.add_projection_to_dict(axes_kw)
         self.ax = plt.axes(**axes_kw)
         self.set_extent()
         self.fig.canvas.draw()
 
-
-    def add_subplot(self, *args, axes_kw={}, **proj_kw):
+    def add_subplot(self, *args, axes_kw=None, **proj_kw):
         """Create a map axes based on info from config file"""
-        axes_kw["projection"] = axes_kw.get("projection", self.proj)
+        axes_kw = self.add_projection_to_dict(axes_kw)
         self.ax = plt.gcf().add_subplot(*args, **axes_kw)
         self.set_extent()
         #self.fig.canvas.draw()
@@ -131,8 +139,15 @@ class Projmap(object):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         for attr in ["lon1", "lon2", "lat1", "lat2"]:
             setattr(self, attr, kwargs.get(attr, getattr(self, attr)))
-        self.ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
+        ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
 
+    def set_circle_boundary(self, **kwargs):
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
+        theta = np.linspace(0, 2*np.pi, 100)
+        center, radius = [0.5, 0.5], 0.5
+        verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+        circle = mpath.Path(verts * radius + center)
+        ax.set_boundary(circle, transform=ax.transAxes)
 
     def nice(self, linewidth=0.1, facecolor=None, **proj_kw):
         """Draw land and lat-lon grid"""
@@ -150,21 +165,18 @@ class Projmap(object):
         if facecolor is not None:
             ax.background_patch.set_facecolor(facecolor)
 
-
     def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
-                       squeeze=True, subplot_kw={}, gridspec_kw={},
+                       squeeze=True, subplot_kw=None, gridspec_kw={},
                        fig_kw={}, **proj_kw):
         plt.clf()
         fig_kw["num"] = fig_kw.get("num", plt.gcf().number)
-        subplot_kw["projection"] = subplot_kw.get("projection", self.proj)
+        subplot_kw = self.add_projection_to_dict(subplot_kw)
         self.fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols,
             sharex=sharex, sharey=sharey, squeeze=squeeze,
             subplot_kw=subplot_kw, gridspec_kw=gridspec_kw, **fig_kw)
         for ax in self.fig.axes:
-            ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2],
-                           ccrs.Geodetic())
+            ax.set_extent([self.lon1,self.lon2, self.lat1,self.lat2], self.llproj)
         return self.fig, self.axes
-
 
     def _get_or_create_axis(self, **kwargs):
         """Return correct map axes or create new if needed"""
@@ -190,9 +202,9 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        self._cb = ax.pcolormesh(*arg, **kwargs)
+        self._im = ax.pcolormesh(*arg, **kwargs)
         if colorbar is not None:
-            self.colorbar()
+            self.colorbar(colorbar)
 
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -202,9 +214,9 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        self._cb = ax.contourf(*arg, **kwargs)
+        self._im = ax.contourf(*arg, **kwargs)
         if colorbar is not None:
-            self.colorbar()
+            self.colorbar(colorbar)
 
     def contour(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -216,9 +228,9 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        self._cb = ax.contour(*arg, **kwargs)
+        self._im = ax.contour(*arg, **kwargs)
         if colorbar is not None:
-            self.colorbar()
+            self.colorbar(colorbar)
 
     def streamplot(self, uvel=None, vvel=None, lon=None, lat=None, **kwargs):
         """Create a contourf plot in mapaxes"""
@@ -228,14 +240,15 @@ class Projmap(object):
         kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
-        self._cb = ax.streamplot(lon, lat, uvel, vvel, **kwargs)
+        self._im = ax.streamplot(lon, lat, uvel, vvel, **kwargs)
+        if colorbar is not None:
+            self.colorbar(colorbar)
 
-      
-    def colorbar(self, **kwargs):
+    def colorbar(self, *args, **kwargs):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         self.cax = self.fig.add_axes([0, 0, 0.1, 0.1])
-        plt.colorbar(self._cb, cax=self.cax, orientation='horizontal',
-                         ticklocation='auto', fraction=40)
+        self._cb = plt.colorbar(self._im, cax=self.cax, orientation='horizontal',
+                                ticklocation='auto', fraction=40)
         posn = ax.get_position()
         self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
         def resize_colorbar(event):
@@ -245,8 +258,6 @@ class Projmap(object):
             self.cax.set_position([posn.x0, posn.y0-0.045, posn.width, 0.035])
         self.fig.canvas.mpl_connect('resize_event', resize_colorbar)
 
-
-        
     def scatter(self, lonvec, latvec, *args, **kwargs):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         if len(args) > 0:
@@ -264,7 +275,7 @@ class Projmap(object):
             posn = ax.get_position()
             self.cax.set_position([posn.x0, posn.y0-0.045,
                                    posn.width, 0.04])
-        
+
     def text(self, *args, **kwargs):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
@@ -276,7 +287,6 @@ class Projmap(object):
         elif len(args) == 3:
             lon,lat,text = args
         ax.text(lon, lat, text, **kwargs)
-
 
     def rectangle(self, lon1,lat1, lon2,lat2, step=100, shade=None, **kwargs):
         """Draw a projection correct rectangle on the map."""
