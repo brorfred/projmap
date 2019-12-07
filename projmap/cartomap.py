@@ -45,8 +45,17 @@ class Projmap(object):
         for k1, k2 in zip(base_kw_list, proj_kw_list):
             setattr(self, k2, self.base_kw.get(k1))
         setattr(self, "landresolution", self.ccrs_kw["landresolution"])
+        self.set_style()
         if  (len(plt.gcf().get_axes()) > 0) & (clf==True):
             plt.clf()
+        
+
+    def set_style(self, landfill="0.7", landedge="0.5"):
+        """Set map style"""
+        self.style = dict(landedge="0.4", landface="0.6", landwidth=0.2,
+                          landresolution=self.ccrs_kw["landresolution"],
+                          oceancolor="0.2"
+                         )
 
     @property
     def proj(self):
@@ -69,7 +78,7 @@ class Projmap(object):
             central_longitude = self.base_kw.get('central_longitude', 0)
             return ccrs.Robinson(central_longitude=central_longitude)
 
-    def add_projection_to_dict(self, axes_kw=None):
+    def _add_projection_to_dict(self, axes_kw=None):
         """Return either default of chosen projection object"""
         if axes_kw is None:
             axes_kw = {}
@@ -112,30 +121,40 @@ class Projmap(object):
     def new_map(self, axes_kw=None, **proj_kw):
         """Create a map axes based on info from config file"""
         self.fig = plt.gcf()
-        axes_kw = self.add_projection_to_dict(axes_kw)
+        axes_kw = self._add_projection_to_dict(axes_kw)
         self.ax = plt.axes(**axes_kw)
         self.set_extent()
         self.fig.canvas.draw()
 
-    def add_subplot(self, *args, axes_kw=None, **proj_kw):
-        """Create a map axes based on info from config file"""
-        axes_kw = self.add_projection_to_dict(axes_kw)
-        self.ax = plt.gcf().add_subplot(*args, **axes_kw)
-        self.set_extent()
-        #self.fig.canvas.draw()
 
-    def add_land(self, edgecolor="0.5", facecolor="0.7", **proj_kw):
-        """Draw land and lat-lon grid"""
-        ax= self._get_or_create_axis(**proj_kw)
-        arglist = ["landresolution",]
-        for key in arglist:
-            proj_kw[key] = proj_kw.get(key, getattr(self, key))
-        land = cartopy.feature.NaturalEarthFeature(
-            'physical', 'land', proj_kw["landresolution"],
-            edgecolor=edgecolor, facecolor=facecolor)
-        ax.add_feature(land)
+    #def add_subplot(self, *args, axes_kw=None, **proj_kw):
+    #    """Create a map axes based on info from config file"""
+    #    axes_kw = self._add_projection_to_dict(axes_kw)
+    #    self.ax = plt.gcf().add_subplot(*args, **axes_kw)
+    #    self.set_extent()
+    #    #self.fig.canvas.draw()
 
     def set_extent(self, **kwargs):
+        """Set extend of map
+        Set a different extent of the map than defined in config. Any value
+        can be provided with the current extent as default.
+
+        Parameters
+        ----------
+        lat1 : float, optional
+            Southern-most Latitude
+        lat2 : float, optional
+            Northern-most Latitude
+        lon1 : float, optional
+            Western-most Longitude
+        lon2 : float, optional
+            Eastern-most Longitude
+
+        Proj parameters
+        ---------------
+        ax : int or Axis object
+            Subplot index or axis object. Normally only used with subplots.
+        """      
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         for attr in ["lon1", "lon2", "lat1", "lat2"]:
             setattr(self, attr, kwargs.get(attr, getattr(self, attr)))
@@ -149,19 +168,38 @@ class Projmap(object):
         circle = mpath.Path(verts * radius + center)
         ax.set_boundary(circle, transform=ax.transAxes)
 
+    def add_land(self, **kwargs):
+        """Draw land on map
+
+        Parameters
+        ----------
+        scale : string
+            Resoultion of coastline, one of ‘10m’, ‘50m’, or ‘110m'
+        facecolor : str, optional
+            Color of land
+        edgecolor : str
+            Color of land edge, optional
+
+        Proj parameters
+        ---------------
+        ax : int or Axis object
+            Subplot index or axis object. Normally only used with subplots.
+        """
+        stylekeys = ["landface", "landedge", "landwidth","landresolution"]
+        landkeys  = ["facecolor", "edgecolor", "linewidth", "scale"]
+        for lkey,skey in zip(landkeys, stylekeys):
+            kwargs[lkey] = kwargs.get(lkey, self.style[skey])
+        ax = self._get_or_create_axis(**kwargs)
+        land = cartopy.feature.NaturalEarthFeature('physical', 'land', **kwargs)
+        ax.add_feature(land)
+
     def nice(self, linewidth=0.1, facecolor=None, **proj_kw):
         """Draw land and lat-lon grid"""
         ax= self._get_or_create_axis(**proj_kw)
-        arglist = ["landresolution",]
-        for key in arglist:
-             proj_kw[key] = proj_kw.get(key, getattr(self, key))
-        land = cartopy.feature.NaturalEarthFeature(
-            'physical', 'land', proj_kw["landresolution"],
-            edgecolor="0.7", linewidth=linewidth, facecolor="0.7")
-        ax.add_feature(land)
-        ax.add_feature(cartopy.feature.BORDERS,
-                       linewidth=linewidth, edgecolor="0.8")
+        self.add_land(**proj_kw)
+        ax.add_feature(cartopy.feature.BORDERS, linewidth=linewidth, edgecolor="0.8")
         ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
+        facecolor = self.style["oceancolor"] if facecolor is None else facecolor
         if facecolor is not None:
             ax.background_patch.set_facecolor(facecolor)
 
@@ -170,7 +208,7 @@ class Projmap(object):
                        fig_kw={}, **proj_kw):
         plt.clf()
         fig_kw["num"] = fig_kw.get("num", plt.gcf().number)
-        subplot_kw = self.add_projection_to_dict(subplot_kw)
+        subplot_kw = self._add_projection_to_dict(subplot_kw)
         self.fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols,
             sharex=sharex, sharey=sharey, squeeze=squeeze,
             subplot_kw=subplot_kw, gridspec_kw=gridspec_kw, **fig_kw)
@@ -195,7 +233,30 @@ class Projmap(object):
         return getattr(self, "ax")
 
     def pcolor(self, *arg, **kwargs):
-        """Create a pcolor plot in mapaxes"""
+        """Create a pseudocolor plot in the current projection.
+
+        Uses the matplot method `pcolormesh` in the backend
+
+        Call signature
+        --------------
+        pcolor([lon, lat,] C, **kwargs)
+        *lon* and *lat* can be used to specify lats and lons or the main array.
+
+        Parameters
+        ----------
+        C : array_like
+            A scalar 2-D array. The values will be color-mapped.
+
+        lon, lat : array_like, optional
+            Lon and lat positions to locate the C array on the map. See the 
+            `pcolormesh`for exact definitions. Lon and lat must be set when initiating
+            the class instance to omit lon and lat.
+
+        colorbar : Bool or str, optional
+            Add a colorbar to the figure. Use `global`if the figure is divided 
+            subplots into subpolots and you want a global colorbar. Each subplot
+            pcolor panel should have the same vmin, vmax, and cmap.
+        """
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         if (len(arg) == 1) & (self.lonarr is not None):
             arg = (self.lonarr, self.latarr) + arg
