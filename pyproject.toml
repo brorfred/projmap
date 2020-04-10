@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "projmap"
-version = "0.84"
+version = "0.85"
 description = "High level wrapper of matplotlibs mapping package"
 authors = ["Bror Jonsson <brorfred@gmail.com>"]
 

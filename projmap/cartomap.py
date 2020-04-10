@@ -69,13 +69,14 @@ class Projmap(object):
             return ccrs.LambertConformal(
                 central_latitude=self.lat0, central_longitude=self.lon0)
         elif self.projname=="north_stereo":
-              self.llproj = ccrs.PlateCarree()
-              return ccrs.NorthPolarStereo()
+            self.llproj = ccrs.PlateCarree()
+            return ccrs.NorthPolarStereo()
         elif self.projname=="south_stereo":
-              self.llproj = ccrs.PlateCarree()
-              return ccrs.SouthPolarStereo()
+            self.llproj = ccrs.PlateCarree()
+            return ccrs.SouthPolarStereo()
         else:
             central_longitude = self.base_kw.get('central_longitude', 0)
+            #self.llproj = ccrs.PlateCarree(central_longitude=central_longitude)
             return ccrs.Robinson(central_longitude=central_longitude)
 
     def _add_projection_to_dict(self, axes_kw=None):
@@ -158,7 +159,7 @@ class Projmap(object):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
         for attr in ["lon1", "lon2", "lat1", "lat2"]:
             setattr(self, attr, kwargs.get(attr, getattr(self, attr)))
-        ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], self.llproj)
+        ax.set_extent([self.lon1, self.lon2, self.lat1, self.lat2], ccrs.PlateCarree())
 
     def set_circle_boundary(self, **kwargs):
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
