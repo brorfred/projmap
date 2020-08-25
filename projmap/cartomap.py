@@ -373,3 +373,9 @@ class Projmap(object):
                             transform=kwargs["transform"])
             ax.add_patch(p)
 
+    def plot(self, lons, lats, **kwargs):
+        """Draw a projection correct line on the map."""
+        ax = self._get_or_create_axis(**kwargs)
+        kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
+        kwargs["c"] = kwargs.get("c", "0.5")
+        ax.plot(lons, lats, **kwargs)
