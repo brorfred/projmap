@@ -328,7 +328,7 @@ class Projmap(object):
             kwargs["s"] = args[0]
         if len(args) > 1:
             kwargs["c"] = args[1]
-        kwargs["transform"] = kwargs.get("transform", ccrs.Geodetic())
+        kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
         colorbar = kwargs.pop("colorbar", None)
         fieldname = kwargs.pop("fieldname", None)
         cb = ax.scatter(lonvec, latvec, **kwargs)
