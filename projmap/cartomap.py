@@ -194,11 +194,13 @@ class Projmap(object):
         land = cartopy.feature.NaturalEarthFeature('physical', 'land', **kwargs)
         ax.add_feature(land)
 
-    def nice(self, linewidth=0.1, facecolor=None, **proj_kw):
+    def nice(self, linewidth=0.1, facecolor=None, borders=True, **proj_kw):
         """Draw land and lat-lon grid"""
         ax= self._get_or_create_axis(**proj_kw)
         self.add_land(**proj_kw)
-        ax.add_feature(cartopy.feature.BORDERS, linewidth=linewidth, edgecolor="0.8")
+        if borders:
+            ax.add_feature(cartopy.feature.BORDERS,
+                           linewidth=linewidth, edgecolor="0.8")
         ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
         facecolor = self.style["oceancolor"] if facecolor is None else facecolor
         if facecolor is not None:
