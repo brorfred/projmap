@@ -270,6 +270,54 @@ class Projmap(object):
         if colorbar is not None:
             self.colorbar(colorbar)
 
+    def hatch(self, *arg, **kwargs):
+        """Create hatched plot in the current projection.
+
+        Uses the matplot method `pcolor` in the backend
+
+        Call signature
+        --------------
+        pcolor([lon, lat,] C, **kwargs)
+        *lon* and *lat* can be used to specify lats and lons or the main array.
+
+        Parameters
+        ----------
+        C : array_like
+            A masked 2-D array. unmasked values will be hatched.
+
+        lon, lat : array_like, optional
+            Lon and lat positions to locate the C array on the map. See the 
+            `pcolormesh`for exact definitions. Lon and lat must be set when initiating
+            the class instance to omit lon and lat.
+
+        marker : {'/', '\', '|', '-', '+', 'x', 'o', 'O', '.', '*'}
+            Letters can be combined, in which case all the specified hatchings 
+            are done. If same letter repeats, it increases the density of hatching 
+            of that pattern.
+        color : str
+            Hatch color
+        border_lw : float [0]
+            Linwidth of a possible border around the hatch. Defaults to 0,
+            or no borrder.
+
+        """
+        ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
+        if (len(arg) == 1) & (self.lonarr is not None):
+            arg = (self.lonarr, self.latarr) + arg
+        kwargs["transform"] = kwargs.get("transform", ccrs.PlateCarree())
+        marker = kwargs.pop("marker", "xxxxx")
+        marker_color = kwargs.pop("color", "0.5")
+        border_lw = kwargs.pop("border_lw", 0)
+
+        cs = ax.contourf(*arg, [-1,0,1], hatches=[None, marker], 
+                         colors="none", **kwargs)
+        for collection in cs.collections:
+            collection.set_edgecolor(marker_color)
+            collection.set_linewidth(border_lw)
+
+
+
+
     def contourf(self, *arg, **kwargs):
         """Create a contourf plot in mapaxes"""
         ax = self._get_or_create_axis(ax=kwargs.pop("ax", None))
