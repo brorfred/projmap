@@ -24,11 +24,11 @@ class Projmap(object):
         self.proj_kw = proj_kw
 
         self.lonarr = lonarr
-        for key in ["lon", "lonvec", "lonmat", "llon"]:
+        for key in ["lon", "lonvec", "lonmat", "llon", "lons"]:
             if key in proj_kw:
                 self.lonarr = proj_kw.get(key)
         self.latarr = latarr
-        for key in ["lat", "latvec", "latmat", "llat"]:
+        for key in ["lat", "latvec", "latmat", "llat", "lats"]:
             if key in proj_kw:
                 self.latarr = proj_kw.get(key)
         
@@ -54,7 +54,7 @@ class Projmap(object):
         """Set map style"""
         self.style = dict(landedge="0.4", landface="0.6", landwidth=0.2,
                           landresolution=self.ccrs_kw["landresolution"],
-                          oceancolor="0.2"
+                          oceancolor="0.2", landzorder=None
                          )
 
     @property
@@ -186,8 +186,10 @@ class Projmap(object):
         ax : int or Axis object
             Subplot index or axis object. Normally only used with subplots.
         """
-        stylekeys = ["landface", "landedge", "landwidth","landresolution"]
-        landkeys  = ["facecolor", "edgecolor", "linewidth", "scale"]
+        stylekeys = ["landface", "landedge", "landwidth","landresolution",
+                    "landzorder"]
+        landkeys  = ["facecolor", "edgecolor", "linewidth", "scale",
+                     "zorder"]
         for lkey,skey in zip(landkeys, stylekeys):
             kwargs[lkey] = kwargs.get(lkey, self.style[skey])
         ax = self._get_or_create_axis(**kwargs)
@@ -201,10 +203,10 @@ class Projmap(object):
         if borders:
             ax.add_feature(cartopy.feature.BORDERS,
                            linewidth=linewidth, edgecolor="0.8")
-        ax.gridlines(linewidth=0.4, alpha=0.5, color="k",linestyle='--')
+        ax.gridlines(draw_labels=False, linewidth=0.4, alpha=0.5, color="k",linestyle='--')
         facecolor = self.style["oceancolor"] if facecolor is None else facecolor
         if facecolor is not None:
-            ax.background_patch.set_facecolor(facecolor)
+            ax.set_facecolor(facecolor)
 
     def subplots(self, nrows=1, ncols=1, sharex=True, sharey=True,
                        squeeze=True, subplot_kw=None, gridspec_kw={},
