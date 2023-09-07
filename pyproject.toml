@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "projmap"
-version = "0.86"
+version = "0.9.0"
 description = "High level wrapper of matplotlibs mapping package"
 authors = ["Bror Jonsson <brorfred@gmail.com>"]
 readme = "README.md"
@@ -25,4 +25,4 @@ pytest = "^7.0"
 #build-backend = "poetry.masonry.api"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["setuptools", "poetry_core>=1.0"]
