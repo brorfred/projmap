@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import os
 """A wrapper for the mpl_toolkit Basemap class
 
 Projmap helps with setting up projections and domains for areas
@@ -60,6 +62,7 @@ proj.merid_offset  East-west offset of the map from -180 - 180 deg.
 """
 #from .basemap import Projmap
 import six
+from six.moves import configparser
 
 if six.PY3:
     from .cartomap import Projmap
@@ -68,7 +71,7 @@ else:
     from .basemap import Projmap as Basemap
     from .basemap import Projmap as Map
 
-__version__ = '0.8.2'
+__version__ = '0.9'
 
 #from config import list as listregions
 
@@ -79,6 +82,7 @@ def show_regions(region=""):
     cfg = configparser.ConfigParser()
 
     basedir =  os.path.dirname(os.path.abspath(__file__))
+    print(basedir)
     cfg_file_list = [os.curdir + "/map_regions.cfg",
                      os.path.expanduser("~") + "/.map_regions.cfg",
                      basedir + "/map_regions.cfg"]

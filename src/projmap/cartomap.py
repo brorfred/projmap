@@ -54,6 +54,7 @@ class Projmap(object):
         """Set map style"""
         self.style = dict(landedge="0.4", landface="0.6", landwidth=0.2,
                           landresolution=self.ccrs_kw["landresolution"],
+                          rivercolor="dodgerblue", statecolor="olivedrab",
                           oceancolor="0.2", landzorder=None
                          )
 
@@ -196,14 +197,25 @@ class Projmap(object):
         land = cartopy.feature.NaturalEarthFeature('physical', 'land', **kwargs)
         ax.add_feature(land)
 
-    def nice(self, linewidth=0.1, facecolor=None, borders=True, **proj_kw):
+    def nice(self, linewidth=0.1, facecolor=None, borders=True, rivers=False, 
+             states=False, **proj_kw):
         """Draw land and lat-lon grid"""
         ax= self._get_or_create_axis(**proj_kw)
         self.add_land(**proj_kw)
         if borders:
             ax.add_feature(cartopy.feature.BORDERS,
                            linewidth=linewidth, edgecolor="0.8")
-        ax.gridlines(draw_labels=False, linewidth=0.4, alpha=0.5, color="k",linestyle='--')
+        if rivers:
+            rivers = cartopy.feature.NaturalEarthFeature(
+                    category='physical', name='rivers_lake_centerlines',
+                    scale='10m', facecolor='none', edgecolor=self.style["rivercolor"])
+
+            ax.add_feature(rivers, linewidth=linewidth*3)
+        if states:
+            ax.add_feature(cartopy.feature.STATES,
+                           linewidth=linewidth, edgecolor=self.style["statecolor"])
+
+        #ax.gridlines(draw_labels=False, linewidth=0.4, alpha=0.5, color="k",linestyle='--')
         facecolor = self.style["oceancolor"] if facecolor is None else facecolor
         if facecolor is not None:
             ax.set_facecolor(facecolor)
