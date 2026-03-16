@@ -1,0 +1,509 @@
+
+
+[default]
+description = "Global Robinson projection"
+projection = "robinson"
+lon1 = -180
+lon2 = 179
+lat1 = -80
+lat2 = 80
+lat0 = 0
+lon0 = 0
+merid = []
+paral = []
+merid_offset = 0
+#merid = [-180, -150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150]
+#paral = [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
+fontsize = "small"
+[default.style]
+    landedge = "0.4"
+    landface = "0.6"
+    landwidth = 0.2
+    landresolution = "50m"
+    rivercolor = "dodgerblue"
+    statecolor = "olivedrab"
+    oceancolor ="0.8"
+    #landzorder = 0
+
+[soat]
+projection = "merc"
+lon1 =  -45
+lon2 =   28
+lat2 =  -30
+lat1 =  -75
+
+[gom]
+description = "Gulf on Maine"
+projection = "lcc"
+lon1 =  -71
+lat1 =   41
+lat2 =   46
+lon2 =  -63
+lat0 =   44
+lon0 = -68
+resolution = "i"
+merid = [-70, -68, -66, -64]
+paral =[41, 42, 43, 44, 45, 46]
+
+[casco]
+description = "Casco Bay in the Gulf on Maine"
+projection = "lcc"
+lon1 = -70.6
+lat1 = 43.3
+lat2 = 44.15
+lon2 = -69.3
+lat0 = 44
+lon0 = -68
+resolution = "f"
+merid = [-70, -68, -66, -64]
+paral =[41, 42, 43, 44, 45, 46]
+scale_lon = -70
+scale_lat = 43.3
+scale_dst =50
+
+[nwa]
+description =  "North West Atlantic for Rutgers NWA"
+projection = "lcc"
+lon1 =   -95
+lat1 =    10
+lat2 =    50
+lon2 =   -50
+lat0 = 44
+lon0 = -68
+resolution = "i"
+merid = [-90, -80, -70, -60]
+paral =[20, 30, 40, 50, 60]
+
+[nwa_small]
+description = "North West Atlantic for Rutgers NWA. Focus on coast"
+projection = "lcc"
+lon1 =   -82
+lat1 =    25
+lat2 =    50
+lon2 =   -50
+lat0 = 44
+lon0 = -68
+resolution = "i"
+merid = [-90, -80, -70, -60]
+paral = [30, 35, 40, 45, 50]
+
+[fvcom_gom]
+description = "North West Atlantic for Rutgers NWA. Focus on coast"
+projection = "lcc"
+lon1 =   -75.5
+lat1 =    35.0
+lat2 =    46.0
+lon2 =   -56.0
+lat0 = 40.0
+lon0 = -65.5
+resolution = "i"
+merid = [-90, -80, -70, -60]
+paral = [35, 40, 45]
+
+
+[safr]
+description = "Southern Ocean south of South Africa"
+projection = "stere"
+lon1 =   -70
+lat1 =   -60
+lat2 =   -20
+lon2 =    30
+lat0 = -40
+lon0 = 0
+resolution = "i"
+merid = [-60, -40, -20, 0, 20, 40]
+paral = [-60, -50, -40, -30]
+
+[westcoast]
+description = "West Coast of US from Mexico to Canada"
+projection = "lcc"
+lon1 =  -160
+lat1 =    20
+lat2 =    60
+lon2 =  -100
+lat0 =   40
+lon0 =  -130
+resolution = "i"
+merid = [-60, -45, -30, -15, 0, 15, 30, 45]
+paral = [-80, -60, -40, -20]
+
+
+[ebus_canary]
+description = "North Atlantic EBUS"
+projection = "lcc"
+lon1 =   -30
+lat1 =     3
+lat2 =    44
+lon2 =     0
+lat0 =   20
+lon0 =   -7
+merid = [-80, -60, -40, -20, 0]
+paral = [20, 30, 40, 50, 60]
+lonlabels = [0, 0, 0, 1]
+
+[klamath]
+description = "Northern California Coast including the Klamath river."
+projection = "lcc"
+lon1 =  -126
+lat1 =   39
+lat2 =   43
+lon2 =  -122
+lat0 = 41
+lon0 = -124
+merid = [-60, -45, -30, -15, 0, 15, 30, 45]
+paral = [39, 41, 43]
+
+[omi]
+description = "Northern California Coast including the Klamath river."
+projection = "lcc"
+lon1 =  -5
+lon2 =   5
+lat1 =   0
+lat2 =   7
+lat0 = 0
+lon0 = -0
+#merid = [-60, -45, -30, -15, 0, 15, 30, 45]
+#paral = [39, 41, 43]
+[omi.style]
+    landedge = "0.4"
+    landface = "0.6"
+    landwidth = 0.2
+    landresolution = "10m"
+    rivercolor = "dodgerblue"
+    statecolor = "olivedrab"
+    oceancolor ="0.8"
+    #landzorder = 0
+
+[omi_cruise]
+description = "OMI Cruise region."
+projection = "eckert4"
+lon1 =  -0.6
+lon2 =   0.6
+lat1 =   5
+lat2 =   5.9
+lat0 = 0
+lon0 = -0
+merid = [0,]
+paral = [5,]
+coast_resolution = "full"
+rivers = true
+locations = [
+    { name = "Tema",      lon = 0.000278,  lat = 5.6333, color="tab:red", va="top"},
+    { name = "Accra",     lon = -0.205874, lat = 5.6148, color="tab:red", va="top"},
+    { name = "Jamestown", lon = -0.2122,   lat = 5.5331, color="tab:blue"},
+    { name = "Sakumo",    lon = -0.033820, lat = 5.6444, color="tab:blue"},
+    { name = "Ayitepa",    lon = 0.267,    lat = 5.7830, color="tab:blue"},
+    { name = "Prampram",  lon = 0.1,       lat = 5.7167, color="tab:blue"},
+]
+landresolution = "full"
+[omi_cruise.style]
+    landedge = "0.4"
+    landface = "0.7"
+    landwidth = 0.2
+    landresolution = "10m"
+    rivercolor = "dodgerblue"
+    statecolor = "olivedrab"
+    oceancolor ="0.9"
+    #landzorder = 0
+
+[auze]
+description = "Southern Ocean near Australia"
+projection = "merc"
+lon1 = 119
+lon2 = 200
+lat1 = -68
+lat2 = -30
+
+[soserect]
+description = "Southern Ocean rectangular"
+projection = "merc"
+lon1 = -180
+lon2 = 179
+lat1 = -75
+lat2 = -30
+
+[atlantic]
+description = "Atlantic ocean as Robinson projection"
+projection = "robinson"
+lon1 = -95
+lon2 = 20
+lat1 = -80
+lat2 = 80
+lon0 = -40
+merid = []
+paral = []
+
+[npac]
+description = "Robinson projection of North Pacific"
+projection = "robinson"
+lon1 = -260
+lon2 = -75
+lat1 = 0
+lat2 = 70
+lon0 = 180
+merid = []
+paral = []
+
+[pretty_glob]
+description = "Dark-themed global Robinson projection"
+projection = "robinson"
+lon1 = -180
+lon2 = 179
+lat1 = -80
+lat2 = 80
+lon0 = 0
+merid = []
+paral = []
+[pretty_glob.style]
+    landface = "#262626"
+    landedge = "#353a3c"
+    oceancolor = "#353a3c"
+
+[indthr]
+description = "Indonesian Throughflow"
+projection = "merc"
+lon1 = 94
+lon2 = 169
+lat1 = -28
+lat2 = 28
+lat0 = 40
+lon0 = 130
+merid = [100, 120, 140, 160]
+paral = [-20, -10, 0, 10, 20]
+
+[scb]
+description = "South California Bight"
+projection = "lcc"
+lon1 = -121.5
+lon2 = -117
+lat1 = 32
+lat2 = 35
+lat0 = 31
+lon0 = -118
+merid = [-121, -120, -119, -118]
+paral = [32, 33, 34]
+
+[keys_fla]
+description = "Florida Keys"
+projection = "lcc"
+lon1 = -83.5
+lon2 = -80.5
+lat1 = 24
+lat2 = 26.5
+lat0 = 44
+lon0 = -68
+
+[massBay]
+description = "Massachusetts Bay"
+projection = "lcc"
+lon1 = -71.2
+lon2 = -69.6
+lat1 = 41.5
+lat2 = 42.8
+lat0 = 44
+lon0 = -70.8
+merid = [-71, -70.5, -70]
+paral = [42, 42.5]
+scale_lon = -69.95
+scale_lat = 42.7
+scale_dst = 50
+
+[bob]
+description = "Bay of Bengal"
+projection = "lcc"
+lon1 = 75
+lon2 = 100
+lat1 = 0
+lat2 = 25
+lat0 = 12
+lon0 = 85
+merid = []
+paral = []
+
+[natl]
+description = "North Atlantic"
+projection = "lcc"
+lon1 = -77
+lon2 = 20
+lat1 = 10
+lat2 = 65
+lat0 = 10
+lon0 = -40
+merid = [-80, -60, -40, -20, 0]
+paral = [20, 30, 40, 50, 60]
+
+[tropatl]
+description = "Tropical Atlantic"
+projection = "merc"
+lon1 = -100
+lon2 = 20
+lat1 = -45
+lat2 = 45
+lon0 = -40
+merid = [-80, -60, -40, -20, 0]
+paral = [-30, -15, 0, 15, 30]
+
+[carib]
+description = "Large Caribbean"
+projection = "lcc"
+lon1 = -100
+lon2 = -55
+lat1 = 0
+lat2 = 35
+lat0 = 10
+lon0 = -80
+merid = [-90, -80, -70]
+paral = [15, 30]
+
+[amzn_plume]
+description = "Amazon plume / Tropical Atlantic"
+projection = "merc"
+lon1 = -80
+lon2 = -10
+lat1 = -15
+lat2 = 30
+lon0 = -40
+merid = [-80, -60, -40, -20, 0]
+paral = [-30, -15, 0, 15, 30]
+
+[scand]
+description = "Scandinavia"
+projection = "lcc"
+lon1 = 5
+lon2 = 43
+lat1 = 53
+lat2 = 70
+lat0 = 44
+lon0 = 10
+
+[subatl]
+description = "Subpolar Atlantic"
+projection = "lcc"
+lon1 = -57
+lon2 = 10
+lat1 = 35
+lat2 = 70
+lat0 = 60
+lon0 = -30
+
+[L4]
+description = "Surroundings of the L4 Station"
+projection = "lcc"
+lon1 = -20
+lon2 = 10
+lat1 = 40
+lat2 = 60
+lat0 = 30
+lon0 = 0
+merid = [-20, -15, -10, -5, 0, 5, 10]
+paral = [35, 40, 45, 50, 55]
+
+[atl_north_hem]
+description = "Atlantic northern hemisphere"
+projection = "merc"
+lon1 = -110
+lon2 = 20
+lat1 = -20
+lat2 = 80
+merid = []
+paral = []
+
+[indian_ocean]
+description = "Indian Ocean"
+projection = "merc"
+lon1 = 30
+lon2 = 120
+lat1 = -45
+lat2 = 45
+merid = []
+paral = []
+
+[arabob]
+description = "Arabian Sea and Bay of Bengal"
+projection = "lcc"
+lon1 = 42
+lon2 = 100
+lat1 = -5
+lat2 = 31
+lat0 = 36
+lon0 = 70
+merid = []
+paral = []
+
+[somalicurr]
+description = "Somali current and upwelling"
+projection = "lcc"
+lon1 = 42
+lon2 = 70
+lat1 = 0
+lat2 = 15
+lat0 = 7.5
+lon0 = 56
+merid = []
+paral = []
+
+[korea]
+description = "Korean Peninsula and surrounding waters"
+projection = "lcc"
+lon1 = 118
+lon2 = 130
+lat1 = 28
+lat2 = 41
+lat0 = 30
+lon0 = 124
+merid = [120, 125, 130]
+paral = [30, 35, 40]
+
+[calypso]
+description = "Western Mediterranean for the Calypso project"
+projection = "lcc"
+lon1 = -6
+lon2 = -1.5
+lat1 = 35
+lat2 = 36.9
+lat0 = 35
+lon0 = 0
+
+[GOCI]
+description = "GOCI Geostationary Satellite domain"
+projection = "lcc"
+lon1 = 116.0
+lon2 = 144.0
+lat1 = 21.25
+lat2 = 48.0
+lat0 = 30
+lon0 = 130
+merid = []
+paral = []
+
+[mohid]
+description = "MOHID model domain"
+projection = "lcc"
+lon1 = 117.4
+lon2 = 129.5
+lat1 = 28.6
+lat2 = 41.0
+lat0 = 35
+lon0 = 123.4
+merid = []
+paral = []
+
+[arctic]
+description = "Arctic region"
+projection = "north_stereo"
+lon1 = -180
+lon2 = 180
+lat1 = 60
+lat2 = 90
+merid = []
+paral = []
+
+[antarctic]
+description = "Antarctic region"
+projection = "south_stereo"
+lon1 = -180
+lon2 = 180
+lat1 = -90
+lat2 = -40
+merid = []
+paral = []
