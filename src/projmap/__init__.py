@@ -91,6 +91,84 @@ def _load_toml_regions():
     return regions
 
 
+_SKELETON_SETTINGS = """\
+[default]
+description = "Global Robinson projection"
+projection = "robinson"
+lon1 = -180
+lon2 = 179
+lat1 = -80
+lat2 = 80
+lat0 = 0
+lon0 = 0
+merid = []
+paral = []
+fontsize = "small"
+[default.style]
+    landedge = "0.4"
+    landface = "0.6"
+    landwidth = 0.2
+    landresolution = "50m"
+    rivercolor = "dodgerblue"
+    statecolor = "olivedrab"
+    oceancolor = "0.8"
+
+[nwa]
+description = "North West Atlantic"
+projection = "lcc"
+lon1 = -95
+lon2 = -50
+lat1 = 10
+lat2 = 50
+lat0 = 44
+lon0 = -68
+merid = [-90, -80, -70, -60]
+paral = [20, 30, 40, 50, 60]
+
+[korea]
+description = "Korean Peninsula and surrounding waters"
+projection = "lcc"
+lon1 = 118
+lon2 = 130
+lat1 = 28
+lat2 = 41
+lat0 = 30
+lon0 = 124
+merid = [120, 125, 130]
+paral = [30, 35, 40]
+
+[antarctic]
+description = "Antarctic region"
+projection = "south_stereo"
+lon1 = -180
+lon2 = 180
+lat1 = -90
+lat2 = -40
+merid = []
+paral = []
+"""
+
+
+def init(path="settings.toml", overwrite=False):
+    """Create a skeleton settings.toml in the current directory.
+
+    Parameters
+    ----------
+    path : str, optional
+        Output file path. Defaults to ``"settings.toml"``.
+    overwrite : bool, optional
+        Overwrite an existing file. Defaults to False.
+    """
+    import pathlib
+
+    target = pathlib.Path(path)
+    if target.exists() and not overwrite:
+        print(f"{target} already exists. Use overwrite=True to replace it.")
+        return
+    target.write_text(_SKELETON_SETTINGS)
+    print(f"Created {target.resolve()}")
+
+
 def show_regions():
     """Print all available regions and their descriptions.
 

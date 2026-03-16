@@ -21,6 +21,18 @@ mp.nice()
 
 ## Configuration and regions
 
+### Getting started with a settings file
+
+Run this once in your project directory to create a skeleton `settings.toml`:
+
+```python
+projmap.init()
+```
+
+This creates a `settings.toml` with the `default`, `nwa`, `korea`, and `antarctic` regions as a starting point. To overwrite an existing file, pass `overwrite=True`.
+
+### Settings file format
+
 Maps are defined by *regions* stored in TOML configuration files. Projmap searches for settings in this order:
 
 1. `/etc/projmap/settings.toml`
@@ -28,29 +40,33 @@ Maps are defined by *regions* stored in TOML configuration files. Projmap search
 3. `./settings.toml` (current directory)
 4. Path in the environment variable `PROJMAP_SETTINGS_FILE_FOR_DYNACONF`
 
-Each region is a TOML table with projection parameters and optional styling:
+Each region is a top-level TOML table with projection parameters and optional styling:
 
 ```toml
-[default.regions.myregion]
+[myregion]
+description = "My custom region"
 lat1 = 48.0
 lat2 = 62.0
 lon1 = -10.0
 lon2 = 20.0
 projection = "lcc"      # Lambert Conformal Conic
-style.oceancolor = "0.15"
-style.landface = "0.6"
+
+[myregion.style]
+oceancolor = "0.15"
+landface = "0.6"
+landresolution = "10m"  # Natural Earth resolution: 10m, 50m, 110m
 ```
 
 **Supported projections:** `lcc` (Lambert Conformal), `merc` (Mercator), `eckert4` (Eckert IV), `north_stereo`, `south_stereo`, and Robinson (default).
 
-List available regions:
+### Listing and inspecting regions
 
 ```python
-projmap.show_regions()            # list all regions
-projmap.show_regions("myregion")  # show settings for one region
+projmap.show_regions()       # list all available regions across all settings files
+projmap.show_region("nwa")   # show all settings for a specific region
 ```
 
-Projection parameters can also be passed directly to the constructor:
+Projection parameters can also be passed directly to the constructor to override or extend a region:
 
 ```python
 mp = projmap.Map("default", lat1=48, lat2=62, lon1=-10, lon2=20)
@@ -144,7 +160,7 @@ mp.nice()
 Style values can also be set permanently in your `settings.toml`:
 
 ```toml
-[default.regions.myregion.style]
+[myregion.style]
 landface = "0.65"
 landedge = "0.4"
 oceancolor = "0.15"
@@ -156,7 +172,7 @@ landresolution = "10m"   # Natural Earth resolution: 10m, 50m, 110m
 Add labelled point markers to a region by defining them in `settings.toml`:
 
 ```toml
-[[default.regions.myregion.locations]]
+[[myregion.locations]]
 name = "Oslo"
 lon = 10.75
 lat = 59.91
@@ -189,7 +205,9 @@ They are drawn automatically by `mp.nice()` / `mp.add_locations()`.
 | `set_style(landfill, landedge)` | Override map style |
 | `set_extent(**kw)` | Set geographic extent |
 | `set_circle_boundary()` | Circular boundary (polar projections) |
-| `show_regions(region)` | List available regions |
+| `init(path, overwrite)` | Create a skeleton `settings.toml` in the current directory |
+| `show_regions()` | List all available regions |
+| `show_region(region)` | Print all settings for a specific region |
 
 All plotting methods accept a `colorbar=True` keyword to add a colorbar, and pass remaining keyword arguments to the underlying Matplotlib/Cartopy function.
 

@@ -44,6 +44,14 @@ extra_file = os.getenv("PROJMAP_SETTINGS_FILE_FOR_DYNACONF")
 if extra_file:
     settings_files.append(pathlib.Path(extra_file).absolute())
 
+if not any(p.exists() for p in settings_files if p.suffix == ".toml" and not p.name.startswith(".")):
+    import warnings
+    warnings.warn(
+        "No projmap settings.toml found. Run projmap.init() to create one in the current directory.",
+        UserWarning,
+        stacklevel=2,
+    )
+
 settings = Dynaconf(
     merge_enabled=False,
     envvar_prefix="PROJMAP",
