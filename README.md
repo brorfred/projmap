@@ -218,8 +218,6 @@ All plotting methods accept a `colorbar=True` keyword to add a colorbar, and pas
 - [NumPy](https://numpy.org/) >= 2.4
 - [Dynaconf](https://www.dynaconf.com/) >= 3.2
 - [matplotlib-scalebar](https://github.com/ppinard/matplotlib-scalebar) >= 0.9
-- [xarray](https://xarray.pydata.org/) >= 2026.2
-- [netCDF4](https://unidata.github.io/netcdf4-python/) >= 1.7
 
 ## License
 
