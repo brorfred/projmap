@@ -4,9 +4,9 @@ This module handles loading and managing configuration settings using
 Dynaconf. Settings are loaded from multiple locations in order of
 increasing priority:
 
-1. Global settings (/etc/projmap/)
-2. User settings (~/.config/projmap/)
-3. Current directory settings (./)
+1. Global settings (/etc/projmap/projmap_settings.toml)
+2. User settings (~/.config/projmap/projmap_settings.toml)
+3. Current directory settings (./projmap_settings.toml)
 4. Environment variable specified file (PROJMAP_SETTINGS_FILE_FOR_DYNACONF)
 
 Attributes
@@ -33,11 +33,11 @@ USER_DIR.mkdir(parents=True, exist_ok=True)
 GLOB_DIR = pathlib.Path("/etc/projmap/")
 CURR_DIR = pathlib.Path("./").absolute()
 settings_files = [
-    GLOB_DIR / "settings.toml",
+    GLOB_DIR / "projmap_settings.toml",
     GLOB_DIR / ".secrets.toml",
-    USER_DIR / "settings.toml",
+    USER_DIR / "projmap_settings.toml",
     USER_DIR / ".secrets.toml",
-    CURR_DIR / "settings.toml",
+    CURR_DIR / "projmap_settings.toml",
     CURR_DIR / ".secrets.toml",
 ]
 extra_file = os.getenv("PROJMAP_SETTINGS_FILE_FOR_DYNACONF")
@@ -47,7 +47,7 @@ if extra_file:
 if not any(p.exists() for p in settings_files if p.suffix == ".toml" and not p.name.startswith(".")):
     import warnings
     warnings.warn(
-        "No projmap settings.toml found. Run projmap.init() to create one in the current directory.",
+        "No projmap projmap_settings.toml found. Run projmap.init() to create one in the current directory.",
         UserWarning,
         stacklevel=2,
     )
@@ -56,7 +56,7 @@ settings = Dynaconf(
     merge_enabled=False,
     envvar_prefix="PROJMAP",
     # DEBUG_LEVEL_FOR_DYNACONF="DEBUG",
-    settings_files="settings.toml",
+    settings_files="projmap_settings.toml",
     environments=True,
     env="default",
     default_env="default",

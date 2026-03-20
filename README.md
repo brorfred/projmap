@@ -23,21 +23,21 @@ mp.nice()
 
 ### Getting started with a settings file
 
-Run this once in your project directory to create a skeleton `settings.toml`:
+Run this once in your project directory to create a skeleton `projmap_settings.toml`:
 
 ```python
 projmap.init()
 ```
 
-This creates a `settings.toml` with the `default`, `nwa`, `korea`, and `antarctic` regions as a starting point. To overwrite an existing file, pass `overwrite=True`.
+This creates a `projmap_settings.toml` with the `default`, `nwa`, `korea`, and `antarctic` regions as a starting point. To overwrite an existing file, pass `overwrite=True`.
 
 ### Settings file format
 
 Maps are defined by *regions* stored in TOML configuration files. Projmap searches for settings in this order:
 
-1. `/etc/projmap/settings.toml`
-2. `~/.config/projmap/settings.toml`
-3. `./settings.toml` (current directory)
+1. `/etc/projmap/projmap_settings.toml`
+2. `~/.config/projmap/projmap_settings.toml`
+3. `./projmap_settings.toml` (current directory)
 4. Path in the environment variable `PROJMAP_SETTINGS_FILE_FOR_DYNACONF`
 
 Each region is a top-level TOML table with projection parameters and optional styling:
@@ -157,7 +157,7 @@ mp.set_style(landfill="0.65", landedge="0.4")
 mp.nice()
 ```
 
-Style values can also be set permanently in your `settings.toml`:
+Style values can also be set permanently in your `projmap_settings.toml`:
 
 ```toml
 [myregion.style]
@@ -169,7 +169,7 @@ landresolution = "10m"   # Natural Earth resolution: 10m, 50m, 110m
 
 ### Named locations
 
-Add labelled point markers to a region by defining them in `settings.toml`:
+Add labelled point markers to a region by defining them in `projmap_settings.toml`:
 
 ```toml
 [[myregion.locations]]
@@ -205,7 +205,7 @@ They are drawn automatically by `mp.nice()` / `mp.add_locations()`.
 | `set_style(landfill, landedge)` | Override map style |
 | `set_extent(**kw)` | Set geographic extent |
 | `set_circle_boundary()` | Circular boundary (polar projections) |
-| `init(path, overwrite)` | Create a skeleton `settings.toml` in the current directory |
+| `init(path, overwrite)` | Create a skeleton `projmap_settings.toml` in the current directory |
 | `show_regions()` | List all available regions |
 | `show_region(region)` | Print all settings for a specific region |
 

@@ -62,7 +62,7 @@ scale_lat = 43.3
 scale_dst =50
 
 [nwa]
-description =  "North West Atlantic for Rutgers NWA"
+description =  "North West Atlantic"
 projection = "lcc"
 lon1 =   -95
 lat1 =    10
@@ -75,7 +75,7 @@ merid = [-90, -80, -70, -60]
 paral =[20, 30, 40, 50, 60]
 
 [nwa_small]
-description = "North West Atlantic for Rutgers NWA. Focus on coast"
+description = "North West Atlantic, focus on coast"
 projection = "lcc"
 lon1 =   -82
 lat1 =    25
@@ -173,6 +173,22 @@ lon0 = -0
     statecolor = "olivedrab"
     oceancolor ="0.8"
     #landzorder = 0
+
+[satl]
+description = "South Atlantic region."
+projection = "eckert4"
+lon1 =  -60
+lon2 =  30
+lat1 =  -60
+lat2 =   15
+lat0 = 0
+lon0 = -0
+merid = [0,]
+paral = [5,]
+#coast_resolution = "50m"
+landresolution = "50m"
+rivers = true
+
 
 [omi_cruise]
 description = "OMI Cruise region."

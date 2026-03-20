@@ -149,13 +149,13 @@ paral = []
 """
 
 
-def init(path="settings.toml", overwrite=False):
-    """Create a skeleton settings.toml in the current directory.
+def init(path="projmap_settings.toml", overwrite=False):
+    """Create a skeleton projmap_settings.toml in the current directory.
 
     Parameters
     ----------
     path : str, optional
-        Output file path. Defaults to ``"settings.toml"``.
+        Output file path. Defaults to ``"projmap_settings.toml"``.
     overwrite : bool, optional
         Overwrite an existing file. Defaults to False.
     """
@@ -174,9 +174,9 @@ def show_regions():
 
     Settings files are searched in this order:
 
-    1. ``/etc/projmap/settings.toml``
-    2. ``~/.config/projmap/settings.toml``
-    3. ``./settings.toml``
+    1. ``/etc/projmap/projmap_settings.toml``
+    2. ``~/.config/projmap/projmap_settings.toml``
+    3. ``./projmap_settings.toml``
     4. Path in ``PROJMAP_SETTINGS_FILE_FOR_DYNACONF``
     """
     regions = _load_toml_regions()
@@ -195,7 +195,7 @@ def show_region(region):
     Parameters
     ----------
     region : str
-        Region name as defined in a settings.toml file.
+        Region name as defined in a projmap_settings.toml file.
     """
     regions = _load_toml_regions()
     if region not in regions:
