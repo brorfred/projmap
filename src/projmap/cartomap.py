@@ -58,7 +58,7 @@ class Projmap(object):
         if (len(plt.gcf().get_axes()) > 0) and clf:
             plt.clf()
 
-    def set_style(self, landfill="0.7", landedge="0.5"):
+    def set_style(self, **kwargs):
         """Override the default map style.
 
         Updates ``self.style`` with the given land fill and edge colors.
@@ -70,16 +70,9 @@ class Projmap(object):
         landedge : str, optional
             Edge color of land mass outlines. Defaults to "0.5".
         """
-        self.style = dict(
-            landedge=landedge,
-            landface=landfill,
-            landwidth=0.2,
-            landresolution=self.style.get("landresolution", "10m"),
-            rivercolor="dodgerblue",
-            statecolor="olivedrab",
-            oceancolor="0.2",
-            landzorder=None,
-        )
+        self.style = settings["style"]
+        for kw in kwargs:
+            self.style[kw] = kwargs[kw]
 
     @property
     def proj(self):
@@ -219,7 +212,7 @@ class Projmap(object):
             kwargs[lkey] = kwargs.get(lkey, self.style.get(skey, None))
         ax = self._get_or_create_axis(**kwargs)
 
-        if settings["landresolution"] in [
+        if self.style["landresolution"] in [
             "c",
             "crude",
             "l",
@@ -233,11 +226,11 @@ class Projmap(object):
             "auto",
         ]:
             land = cartopy.feature.GSHHSFeature(
-                scale=settings["landresolution"],
+                scale=self.style["landresolution"],
                 levels=[1],
-                linewidth=settings["style"]["landwidth"],
-                facecolor=settings["style"]["landface"],
-                edgecolor=settings["style"]["landedge"],
+                linewidth=self.style["landwidth"],
+                facecolor=self.style["landface"],
+                edgecolor=self.style["landedge"],
             )
 
         else:

@@ -16,14 +16,14 @@ merid_offset = 0
 #paral = [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
 fontsize = "small"
 [default.style]
+    landresolution = "50m"
     landedge = "0.4"
     landface = "0.6"
     landwidth = 0.2
-    landresolution = "50m"
     rivercolor = "dodgerblue"
     statecolor = "olivedrab"
     oceancolor ="0.8"
-    #landzorder = 0
+    landzorder = 10
 
 [soat]
 projection = "merc"
@@ -186,7 +186,8 @@ lon0 = -0
 merid = [0,]
 paral = [5,]
 #coast_resolution = "50m"
-landresolution = "50m"
+[satl.style]
+    landresolution = "50m"
 rivers = true
 
 
